@@ -97,3 +97,12 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+ARFoundationRemoteInstaller
+ARFoundationRemoteCompanionApp/ARCompanionMidterm-AR-Project_BurstDebugInformation_DoNotShip/tempburstlibs/arm64-v8a/lib_burst_generated.txt
+Assets/Plugins/ARFoundationRemoteInstaller.meta
+Assets/XR/Loaders/ARFoundationRemoteLoader.asset
+Assets/XR/Loaders/ARFoundationRemoteLoader.asset.meta
+Assets/XR/Settings/ARFoundationRemoteLoaderSettings.asset
+Assets/XR/Settings/ARFoundationRemoteLoaderSettings.asset.meta
+Assets/XR/Settings/ARFoundationRemoteSessionRecordsData.asset
+Assets/XR/Settings/ARFoundationRemoteSessionRecordsData.asset.meta
