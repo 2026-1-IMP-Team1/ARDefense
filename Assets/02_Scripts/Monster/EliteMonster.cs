@@ -1,7 +1,5 @@
 using UnityEngine;
-using static MonsterHP;
-using static MonsterAttackDamage;
-using static MonsterAttackSpeed;
+using static MonsterStats;
 
 public class EliteMonster : Monster
 {
