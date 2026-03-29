@@ -1,9 +1,9 @@
 using UnityEngine;
 using static MonsterStats;
 
-public class EliteMonster : Monster
+public sealed class EliteMonster : Monster
 {
-    public override void Init()
+    public sealed override void Init()
     {
         type = MonsterType.ELITE_MONSTER;
 
