@@ -507,6 +507,7 @@ GameObject:
   - component: {fileID: 1629617130}
   - component: {fileID: 1629617128}
   - component: {fileID: 1629617129}
+  - component: {fileID: 1629617133}
   m_Layer: 0
   m_Name: XR Origin (Mobile AR)
   m_TagString: Untagged
@@ -594,6 +595,23 @@ Transform:
   - {fileID: 1018214669}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1629617133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629617127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 503491d237e6f5644a3088337bb7aeda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameBoardGenerator
+  columns: 6
+  rows: 6
+  tilePrefab: {fileID: 2577558067217510085, guid: 38e4256a65879834c9a4fd05c3e09151, type: 3}
+  alignBoardToCamera: 1
+  planeManager: {fileID: 1629617128}
 --- !u!1 &1790157699
 GameObject:
   m_ObjectHideFlags: 0
