@@ -6,8 +6,8 @@ using static Tile;
 public class GameBoardGenerator : MonoBehaviour
 {
     [Header("GameBoard 타일 Condition 세팅")]
-    [SerializeField] private int columns = 6; // 가로 타일 개수
-    [SerializeField] private int rows = 6; // 세로 타일 개수
+    [SerializeField] private int columns; // 가로 타일 개수
+    [SerializeField] private int rows; // 세로 타일 개수
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private bool alignBoardToCamera = true;
 
@@ -38,15 +38,15 @@ public class GameBoardGenerator : MonoBehaviour
 
         foreach (ARPlane plane in args.added)
         {
-            if (CheckPlaneCondition(plane)) return;
+            if (IsValidPlaneToPlaceGameBoard(plane)) return;
         }
         foreach (ARPlane plane in args.updated)
         {
-            if (CheckPlaneCondition(plane)) return;
+            if (IsValidPlaneToPlaceGameBoard(plane)) return;
         }
     }
 
-    private bool CheckPlaneCondition(ARPlane plane)
+    private bool IsValidPlaneToPlaceGameBoard(ARPlane plane)
     {
         if (plane.alignment != PlaneAlignment.HorizontalUp) return false;
 
@@ -71,7 +71,7 @@ public class GameBoardGenerator : MonoBehaviour
         GameBoard = new GameObject("GameBoard");
         Vector3 boardPos = plane.transform.position;
 
-        // 1. 카메라가 있는 방향 기준으로 GameBoard를 정렬(Rotation 조정) 후, GameBoard 위치시킨다.
+        // 1. 카메라가 있는 방향 기준으로 GameBoard를 정렬(Rotation 조정) 후, GameBoard를 위치시킨다.
         Quaternion boardRot;
         if (alignBoardToCamera && Camera.main != null)
         {
@@ -90,7 +90,9 @@ public class GameBoardGenerator : MonoBehaviour
 
         GameBoard.transform.SetPositionAndRotation(boardPos, boardRot);
 
-        // 2. 단위 타일 그리드 생성한다.
+        // 2. 단위 타일 그리드를 생성한다. (가로 개수: columns, 세로 개수 : rows)
+        // 생성된 GameBoard의 가로 길이 : columns * TILE_SIZE
+        // 생성된 GameBoard의 세로 길이 : rows * TILE_SIZE
         float halfW = (columns * TILE_SIZE) * 0.5f;
         float halfD = (rows    * TILE_SIZE) * 0.5f;
         float renderSize = TILE_SIZE;
@@ -99,7 +101,7 @@ public class GameBoardGenerator : MonoBehaviour
         {
             for (int c = 0; c < columns; c++)
             {
-                // 보드 로컬 좌표계에서 타일 중심 위치 계산
+                // GameBoard의 로컬 좌표계에서 타일 중심 위치를 계산
                 Vector3 localPos = new Vector3(
                     -halfW + c * TILE_SIZE + TILE_SIZE * 0.5f,
                     0f,
@@ -110,21 +112,16 @@ public class GameBoardGenerator : MonoBehaviour
                 tile.transform.localPosition = localPos;
                 tile.transform.localRotation = Quaternion.identity;
 
-                // 타일 스케일: Y는 얇게, XZ는 tileSize 기준 (간격 적용)
-                tile.transform.localScale = new Vector3(renderSize, 0.002f, renderSize);
+                tile.transform.localScale = new Vector3(renderSize, 0.01f, renderSize);
                 tile.name = $"Tile_{c}_{r}";
 
-                // Tile 컴포넌트 부착
                 Tile tileComponent = tile.AddComponent<Tile>();
                 tileComponent.x = c;
                 tileComponent.y = r;
-
-                if (!tile.TryGetComponent<BoxCollider>(out _))
-                    tile.AddComponent<BoxCollider>();
             }
         }
 
-        // 3. Plane Tracking을 정리한다.
+        // 3. GameBoard를 다 생성했으므로 Plane Tracking을 정리한다.
         SetAllPlanesVisible(false);
         planeManager.enabled = false;
 

@@ -607,11 +607,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 503491d237e6f5644a3088337bb7aeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameBoardGenerator
-  columns: 6
-  rows: 6
+  columns: 8
+  rows: 8
   tilePrefab: {fileID: 2577558067217510085, guid: 38e4256a65879834c9a4fd05c3e09151, type: 3}
   alignBoardToCamera: 1
   planeManager: {fileID: 1629617128}
+  tileGapRatio: 0.06
 --- !u!1 &1790157699
 GameObject:
   m_ObjectHideFlags: 0
