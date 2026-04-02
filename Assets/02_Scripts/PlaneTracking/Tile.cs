@@ -9,8 +9,30 @@ public class Tile : MonoBehaviour
     public int y;
 
     private bool isTurretInstalled;
-    public bool IsTurretInstalled => isTurretInstalled;
+    public bool IsTurretInstalled
+    {
+        get
+        {
+            return isTurretInstalled;
+        }
+
+        set
+        {
+            isTurretInstalled = value;
+        }
+    }
 
     private GameObject installedTurret = null;
-    public GameObject InstalledTurret => installedTurret;
+    public GameObject InstalledTurret
+    {
+        get
+        {
+            return installedTurret;
+        }
+
+        set
+        {
+            installedTurret = value;
+        }
+    }
 }

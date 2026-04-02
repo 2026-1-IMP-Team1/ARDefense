@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 87502746}
   - component: {fileID: 87502745}
   - component: {fileID: 87502744}
+  - component: {fileID: 87502749}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -356,6 +357,146 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &87502749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87502742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
+--- !u!1 &835155909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 835155910}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &835155910
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 835155909}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 845362146}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &845362145
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3447111282844702401, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_Name
+      value: Turret
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.16622
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.01038
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.6195
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 835155910}
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+--- !u!4 &845362146 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4710642439142225456, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+  m_PrefabInstance: {fileID: 845362145}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1018214668
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,6 +649,7 @@ GameObject:
   - component: {fileID: 1629617128}
   - component: {fileID: 1629617129}
   - component: {fileID: 1629617133}
+  - component: {fileID: 1629617134}
   m_Layer: 0
   m_Name: XR Origin (Mobile AR)
   m_TagString: Untagged
@@ -608,11 +750,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameBoardGenerator
   columns: 8
-  rows: 8
+  rows: 12
   tilePrefab: {fileID: 2577558067217510085, guid: 38e4256a65879834c9a4fd05c3e09151, type: 3}
   alignBoardToCamera: 1
   planeManager: {fileID: 1629617128}
-  tileGapRatio: 0.06
+--- !u!114 &1629617134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629617127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa1e5ae483657b245838f3e4fec34020, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TurretInstaller
+  gameBoardGenerator: {fileID: 1629617133}
+  cam: {fileID: 87502748}
+  turretPrefab: {fileID: 3447111282844702401, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+  turretScaleValue: 0.9
+  tileLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1790157699
 GameObject:
   m_ObjectHideFlags: 0
@@ -718,3 +878,4 @@ SceneRoots:
   - {fileID: 1127717829}
   - {fileID: 1629617132}
   - {fileID: 1368582804}
+  - {fileID: 845362145}
