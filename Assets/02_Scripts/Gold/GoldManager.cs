@@ -39,6 +39,9 @@ public class GoldManager : MonoBehaviour
     public void AddGold(int gold_to_add)
     {
         // 골드 추가 로직 구현
+        Gold += gold_to_add;
+        // 골드 수급 확인 및 현재 골드량 UI와 중복 체크용용
+        Debug.Log($"{gold_to_add} 골드 획득, 현재 골드: {Gold}");
     }
 
     public void SpendGold(int gold_to_spend)

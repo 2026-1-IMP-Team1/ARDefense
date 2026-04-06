@@ -81,6 +81,23 @@ public class TurretInstaller : MonoBehaviour
 
     private void InstallTurret(Tile tile)
     {
+        // 타워 설치 비용 계산
+        // Turret 스크립트를 가져와서 turretCost를 확인합니다.
+        Turret turretScript = turretPrefab.GetComponent<Turret>();
+        // 타워 설치시, 골드 상태 파악
+        if (GoldManager.Instance.Gold < turretScript.turretCost){
+            if (GoldManager.Instance.Gold < turretScript.turretCost)
+            {
+                // 골드 부족 메시지 출력 (디버그 로그 또는 UI 팝업)
+                // 설치 중단
+                Debug.Log($"[TurretInstaller] 골드가 부족합니다. 현재 골드: {GoldManager.Instance.Gold}, 필요 골드: {turretScript.turretCost}");
+                return;
+            }
+            GoldManager.Instance.SpendGold(turretScript.turretCost);
+        }
+        // 설치 골드 보유하고 있을 때 
+
+
         // ── 위치 계산 ────────────────────────────────────
         // 타일 표면 위에 배치 (타일 Y 스케일 = 0.002m이므로 0.001m 위)
         // 포탑 피벗이 하단 중심에 있다고 가정
