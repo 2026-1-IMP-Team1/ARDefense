@@ -7,6 +7,10 @@ public abstract class Turret : MonoBehaviour
     [Header("Health Point 변수 / 프로퍼티")]
     protected float hp;
 
+    // 포탑 가격(타입에 따라서, 세대에 따라서 달라지게 만들어야 함)
+    // 일단 임시로 30으로 정해놓았습니다.
+    public int turretCost = 30;
+
     public float HP
     {
         get

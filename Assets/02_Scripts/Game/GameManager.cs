@@ -7,6 +7,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private GameFlowState currentState;
+
+    // 웨이브를 만들어 "웨이브당 추가 골드 가중치"와 "몬스터 추가 공격력 및 체력", "세대변화"를 추가하면 될 것같습니다.
+    public int wave = 0;
     
     // 외부 스크립트에서 currentState를 참조하고 싶을 때는, 프로퍼티인 CurrentState를 참조하시면 됩니다.
     // 예시: EnemySpawner에서 일반 몬스터의 수가 0이 되었을 경우에

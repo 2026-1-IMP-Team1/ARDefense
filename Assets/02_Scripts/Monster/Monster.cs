@@ -14,13 +14,13 @@ public abstract class Monster : MonoBehaviour
         }
 
         // 일단 Monster의 Type은 외부에서 함부로 변경하기 어렵도록 하는 게 좋을 거 같아 private set으로 해놓았습니다!
-        private set {}
+        private set { }
     }
 
     [Header("Health Point 변수 / 프로퍼티")]
 
     protected float hp;
-    
+
     public float HP
     {
         get
@@ -66,4 +66,43 @@ public abstract class Monster : MonoBehaviour
     }
 
     public abstract void Init();
+
+    // 실시간 몬스터 체력 관리 
+    private void Update()
+    {
+        if (hp <= 0)
+        {
+            Die();
+        }
+    }
+
+    protected virtual void Die()
+    {
+        // 1. 타입에 따른 골드 양 결정
+        int rewardGold = 0;
+        switch (type)
+        {
+            case MonsterType.NORMAL_MONSTER:
+                rewardGold = Gold.NORMAL_MONSTER_GOLD;
+                break;
+            case MonsterType.ELITE_MONSTER:
+                rewardGold = Gold.ELITE_MONSTER_GOLD;
+                break;
+            case MonsterType.BOSS_MONSTER:
+                rewardGold = Gold.BOSS_MONSTER_GOLD;
+                // 세대교체 넣기 및및 웨이브 조절(웨이브 가중치 조절)
+                GameManager.Instance.wave += 1;
+                break;
+        }
+
+        // 2. GoldManager의 싱글톤 인스턴스를 통해 골드 추가
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.AddGold(rewardGold);
+        }
+
+        // 3. 몬스터 오브젝트 파괴
+        Destroy(gameObject);
+    }
+
 }
