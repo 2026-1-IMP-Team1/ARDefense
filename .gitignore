@@ -106,3 +106,6 @@ Assets/XR/Settings/ARFoundationRemoteLoaderSettings.asset
 Assets/XR/Settings/ARFoundationRemoteLoaderSettings.asset.meta
 Assets/XR/Settings/ARFoundationRemoteSessionRecordsData.asset
 Assets/XR/Settings/ARFoundationRemoteSessionRecordsData.asset.meta
+
+# JetBrain Rider Editor
+.idea
