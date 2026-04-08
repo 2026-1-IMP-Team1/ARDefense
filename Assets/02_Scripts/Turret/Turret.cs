@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Turret : MonoBehaviour
+public class Turret : MonoBehaviour
 {
     protected TurretType type;
 
@@ -54,5 +54,5 @@ public abstract class Turret : MonoBehaviour
         }
     }
 
-    public abstract void Init();
+    // public abstract void Init();
 }

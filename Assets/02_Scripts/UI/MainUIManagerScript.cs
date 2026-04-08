@@ -47,6 +47,6 @@ public class MainUIManager : MonoBehaviour
     public void GoToGameUI()
     {
         // 게임 UI로 전환하는 로직을 여기에 추가하세요.
-        SceneManager.LoadScene("GameUI");
+        SceneManager.LoadScene("MainGameScene");
     }
 }
