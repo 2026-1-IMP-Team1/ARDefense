@@ -26,6 +26,7 @@ public class GoldManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
+            Debug.Log($"[GoldManager 자폭] 나 말고 다른 녀석이 이미 존재함! 범인 오브젝트 이름: {Instance.gameObject.name}");
             Destroy(gameObject);
             return;
         }
