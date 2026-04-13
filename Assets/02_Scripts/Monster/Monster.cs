@@ -90,8 +90,8 @@ public abstract class Monster : MonoBehaviour
                 break;
             case MonsterType.BOSS_MONSTER:
                 rewardGold = Gold.BOSS_MONSTER_GOLD;
-                // 세대교체 넣기 및및 웨이브 조절(웨이브 가중치 조절)
-                GameManager.Instance.wave += 1;
+                // 보스 몬스터가 죽으면 세대가 넘어가도록 했습니다.
+                GameManager.Instance.phase++; 
                 break;
         }
 
