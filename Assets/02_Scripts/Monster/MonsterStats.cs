@@ -9,18 +9,18 @@
 
 using UnityEngine;
 
-public class MonsterStats
+public static class MonsterStats
 {
     [Header("Monster HP")]
     // 웨이브당 추가 체력과 공격력을 넣어봤습니다. 가중치 조정은 대강 1/4를 추가해놨습니다.
-    public static readonly float NORMAL_MONSTER_HP = 10.0f + 10.0f * (GameManager.Instance.wave * 0.25f);
-    public static readonly float ELITE_MONSTER_HP = 50.0f * (GameManager.Instance.wave * 0.25f);
-    public static readonly float BOSS_MONSTER_HP = 200.0f * (GameManager.Instance.wave * 0.25f);
+    public static float NORMAL_MONSTER_HP => 10.0f + 10.0f * (GameManager.Instance.Wave * 0.25f);
+    public static float ELITE_MONSTER_HP => 50.0f * (GameManager.Instance.Wave * 0.25f);
+    public static float BOSS_MONSTER_HP => 200.0f * (GameManager.Instance.Wave * 0.25f);
 
     [Header("Monster Attack Damage")]
-    public static readonly float NORMAL_MONSTER_ATTACK_DAMAGE = 5.0f * (GameManager.Instance.wave * 0.25f);
-    public static readonly float ELITE_MONSTER_ATTACK_DAMAGE = 15.0f * (GameManager.Instance.wave * 0.25f);
-    public static readonly float BOSS_MONSTER_ATTACK_DAMAGE = 30.0f * (GameManager.Instance.wave * 0.25f);
+    public static float NORMAL_MONSTER_ATTACK_DAMAGE => 5.0f * (GameManager.Instance.Wave * 0.25f);
+    public static float ELITE_MONSTER_ATTACK_DAMAGE => 15.0f * (GameManager.Instance.Wave * 0.25f);
+    public static float BOSS_MONSTER_ATTACK_DAMAGE => 30.0f * (GameManager.Instance.Wave * 0.25f);
 
     [Header("Monster Attack Speed")]
     // 몬스터의 공격 속도 수치 자체에 대해서는 추가적인 고민이 필요할 거 같습니다.

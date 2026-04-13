@@ -26,7 +26,6 @@ public class GoldManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Debug.Log($"[GoldManager 자폭] 나 말고 다른 녀석이 이미 존재함! 범인 오브젝트 이름: {Instance.gameObject.name}");
             Destroy(gameObject);
             return;
         }
@@ -37,16 +36,24 @@ public class GoldManager : MonoBehaviour
         currentGold = GAME_START_GOLD;
     }
 
-    public void AddGold(int gold_to_add)
+    public void AddGold(int goldToAdd)
     {
         // 골드 추가 로직 구현
-        Gold += gold_to_add;
+        Gold += goldToAdd;
         // 골드 수급 확인 및 현재 골드량 UI와 중복 체크용용
-        Debug.Log($"{gold_to_add} 골드 획득, 현재 골드: {Gold}");
+        Debug.Log($"{goldToAdd} 골드 획득, 현재 골드: {Gold}");
     }
 
-    public void SpendGold(int gold_to_spend)
+    public bool SpendGold(int goldToSpend)
     {
         // 골드 소비 로직 구현
+        if (currentGold < goldToSpend)
+        {
+            Debug.Log($"골드가 부족합니다: 현재 골드 - {Gold} / 사용하려는 골드 - {goldToSpend}");
+            return false;
+        }
+
+        Gold -= goldToSpend;
+        return true;
     }
 }

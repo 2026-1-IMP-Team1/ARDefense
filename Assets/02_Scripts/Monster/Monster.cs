@@ -91,7 +91,7 @@ public abstract class Monster : MonoBehaviour
             case MonsterType.BOSS_MONSTER:
                 rewardGold = Gold.BOSS_MONSTER_GOLD;
                 // 세대교체 넣기 및및 웨이브 조절(웨이브 가중치 조절)
-                GameManager.Instance.wave += 1;
+                GameManager.Instance.Wave += 1;
                 break;
         }
 
