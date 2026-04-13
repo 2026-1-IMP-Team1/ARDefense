@@ -76,6 +76,11 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
+    public void TakeDamage(float damage)
+    {
+        hp -= damage;
+    }
+
     protected virtual void Die()
     {
         // 1. 타입에 따른 골드 양 결정
@@ -104,5 +109,4 @@ public abstract class Monster : MonoBehaviour
         // 3. 몬스터 오브젝트 파괴
         Destroy(gameObject);
     }
-
 }

@@ -2106,7 +2106,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 810274b8504f99a40a16468e3bdfaf27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  wave: 0
 --- !u!4 &936205481
 Transform:
   m_ObjectHideFlags: 0
@@ -3846,6 +3845,7 @@ MonoBehaviour:
   tilePrefab: {fileID: 2577558067217510085, guid: 38e4256a65879834c9a4fd05c3e09151, type: 3}
   alignBoardToCamera: 1
   planeManager: {fileID: 1629617128}
+  chaosGate: {fileID: 2444375805253185268, guid: 35d3f58d4f9bef14385ec082ecca8bc3, type: 3}
 --- !u!114 &1629617134
 MonoBehaviour:
   m_ObjectHideFlags: 0

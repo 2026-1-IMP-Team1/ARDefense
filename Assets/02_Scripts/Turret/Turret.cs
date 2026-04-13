@@ -1,4 +1,5 @@
 using UnityEngine;
+using static TurretStats;
 
 public class Turret : MonoBehaviour
 {
@@ -21,7 +22,8 @@ public class Turret : MonoBehaviour
 
     [Header("포탑의 공격 수치에 관련한 변수 / 프로퍼티")]
     protected float attackDamage;
-    protected int attackSpeed;
+    protected float attackSpeed;
+    protected float attackRange;
 
     public float AttackDamage
     {
@@ -36,7 +38,7 @@ public class Turret : MonoBehaviour
         }
     }
 
-    public int AttackSpeed
+    public float AttackSpeed
     {
         get
         {
@@ -49,5 +51,87 @@ public class Turret : MonoBehaviour
         }
     }
 
-    // public abstract void Init();
+    public float AttackRange
+    {
+        get
+        {
+            return attackRange;
+        }
+
+        set
+        {
+            attackRange = value;
+        }
+    }
+
+    [Header("Private")]
+    private Transform target;
+    private float fireCooldown = 0f;
+
+    void Awake()
+    {
+        Init();
+    }
+
+    void Update()
+    {
+        FindMonster();
+        if (target == null) return;
+
+        RotateToMonster();
+
+        fireCooldown -= Time.deltaTime;
+        if (fireCooldown <= 0f)
+        {
+            Attack();
+            fireCooldown = 1f / attackSpeed;
+        }
+    }
+
+    private void Init()
+    {
+        AttackDamage = TurretStats.AttackDamage;
+        AttackRange = TurretStats.AttackRange;
+        AttackSpeed = TurretStats.AttackSpeed;
+    }
+
+    private void FindMonster()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, attackRange);
+
+        float closestDist = Mathf.Infinity;
+        Transform closest = null;
+
+        foreach (Collider col in hits)
+        {
+            if (!col.CompareTag("Enemy")) continue;
+
+            float dist = Vector3.Distance(transform.position, col.transform.position);
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closest = col.transform;
+            }
+        }
+
+        target = closest;
+    }
+
+    private void RotateToMonster()
+    {
+        if (target == null) return;
+
+        Vector3 dir = (target.position - transform.position).normalized;
+        Quaternion lookRot = Quaternion.LookRotation(dir);
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 10f);
+    }
+
+    private void Attack()
+    {
+        if (target == null) return;
+
+        Monster monster = target.GetComponent<Monster>();
+        monster.TakeDamage(attackDamage);
+    }
 }
