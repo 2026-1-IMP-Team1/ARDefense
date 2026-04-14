@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2512850384507322103}
   - component: {fileID: 485851104892826003}
   - component: {fileID: 2438964199147947854}
+  - component: {fileID: 122456187516962804}
   m_Layer: 0
   m_Name: EliteMonster
   m_TagString: Enemy
@@ -29,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 8143114311335202774}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.31686, y: 0.22181, z: 0.31687}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -125,3 +126,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e15b09b72910db340a2beaeb269497c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EliteMonster
+--- !u!114 &122456187516962804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8143114311335202774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f83ad692d3f9c548880eaacd78c62f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
+  speed: 0.5
+  attackRange: 0.2
