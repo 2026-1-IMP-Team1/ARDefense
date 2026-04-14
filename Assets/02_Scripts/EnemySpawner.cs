@@ -8,7 +8,12 @@ public class EnemySpawner : MonoBehaviour
     public GameObject bossPrefab;
 
     public Transform spawnPoint;
-    public GameFlowState currentState; //현재 게임 단계 (테스트용입니다 나중에는 GameManager에서 받아오면 될 것 같습니다)
+    //현재 게임 단계 (테스트용입니다 나중에는 GameManager에서 받아오면 될 것 같습니다.)
+    // 이중으로 받아와서 괜찮을거 같아요! 그대로 써도 괜찮게 만들었습니다.
+    public GameFlowState currentState;
+
+    // 최대한 수정을 안하려고 윤경님이 만들어놓은 함수의 파라미터 그대로 가져왔습니다!
+    public int amountPerTime;
 
     void Start()
     {
@@ -17,6 +22,22 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
+        // 현재 게임 단계에 맞춰서 한번에 나오는 몬스터 수를 결정하는 로직입니다.
+        // StartWave함수에서 사용
+        if(currentState == GameFlowState.NORMAL_MONSTER_SPAWN)
+        {
+            amountPerTime = MonsterStats.NORMAL_MONSTER_Number;
+        }
+        else if(currentState == GameFlowState.ELITE_MONSTER_SPAWN)
+        {
+            amountPerTime = MonsterStats.ELITE_MONSTER_Number;
+        }
+        else if(currentState == GameFlowState.BOSS_MONSTER_SPAWN)
+        {
+            amountPerTime = MonsterStats.BOSS_MONSTER_Number;
+        }
+
+
         if (Input.GetKeyDown(KeyCode.Space)) // 스페이스바를 누르면 즉시 스폰됩니다 (테스트용입니다)
         {
             SpawnByState();
@@ -80,5 +101,9 @@ public class EnemySpawner : MonoBehaviour
 
             yield return new WaitForSeconds(interval); // interval초만큼 대기
         }
+        // 일단 1씩 증가하게 만들어서 자동적으로 일반몬스터가 다 생성되면 다음엘리트 단계로 넘어가고
+        // 엘리트 몬스터가 다 생성되면 다음 보스 단계로 넘어가도록 만들었습니다.
+        // 보스 웨이브는 나머지 몬스터들이 다 죽으면 생성되게하려면 이 부분만 예외처리해주어야 할거 같습니다.
+        GameManager.Instance.wave++;
     }
 }

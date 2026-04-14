@@ -3,7 +3,7 @@ using static TurretStats;
 
 public class Turret : MonoBehaviour
 {
-    protected TurretType type;
+    //protected TurretType type;
 
     [Header("Health Point 변수 / 프로퍼티")]
     protected float hp;
