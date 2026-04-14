@@ -3,7 +3,6 @@ using UnityEngine.InputSystem.EnhancedTouch; // 추가됨
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 using static Tile;
-using static TurretCost;
 
 public class TurretInstaller : MonoBehaviour
 {
@@ -19,6 +18,8 @@ public class TurretInstaller : MonoBehaviour
     [Header("포탑 스케일 배율 (1이면 TILE_SIZE와 동일)")]
     [SerializeField, Range(0.1f, 1.5f)] private float turretScaleValue = 0.9f;
 
+
+    [Header("타일 Layer Mask")]
     [Header("타일 Layer Mask")]
     [SerializeField] private LayerMask tileLayerMask = ~0;
 
@@ -37,6 +38,9 @@ public class TurretInstaller : MonoBehaviour
     {
         EnhancedTouchSupport.Disable();
     }
+
+    // EnhancedTouch 활성화
+
 
     private void Update()
     {
@@ -83,7 +87,14 @@ public class TurretInstaller : MonoBehaviour
         if (tile.IsTurretInstalled)
         {
             Debug.Log($"[TurretInstaller] 이미 설치됨: ({tile.x}, {tile.y})");
+            Debug.Log($"[TurretInstaller] 이미 설치됨: ({tile.x}, {tile.y})");
             return;
+        }
+
+        // 골드 소모 체크
+        if (GoldManager.Instance != null)
+        {
+            if (!GoldManager.Instance.SpendGold(TurretCost.turretCost)) return;
         }
 
         // 골드 소모 체크
@@ -97,20 +108,7 @@ public class TurretInstaller : MonoBehaviour
 
     private void InstallTurret(Tile tile)
     {
-        // ── 위치 계산 ────────────────────────────────────
-        // 타일 표면 위에 배치 (타일 Y 스케일 = 0.002m이므로 0.001m 위)
-        // 포탑 피벗이 하단 중심에 있다고 가정
-        float tileHalfHeight = tile.transform.localScale.y * 0.5f;
-
-        // turretPrefab의 localScale.y 값이 10배 뻥튀기되는 버그가 있어서
-        // 일단은 0.05f로 상쇄시키는 하드 코딩을 해놓긴 했습니다 ㅠ
-        // 나중에 진짜 포탑 에셋 사용하면서 해당 버그 해결해볼게요
-        float turretHalfHeight = turretPrefab.transform.localScale.y * 0.05f;
-
-        Vector3 spawnPos = tile.transform.position + Vector3.up * (tileHalfHeight + turretHalfHeight);
-
-        // ── 회전 계산 ────────────────────────────────────
-        // 보드의 Y 회전을 따라가도록 설정 (포탑이 보드 방향 기준으로 정렬)
+        // 1. 부모(Tile)의 회전값 가져오기
         Quaternion boardRotation = gameBoardGenerator.GameBoard != null
             ? gameBoardGenerator.GameBoard.transform.rotation
             : Quaternion.identity;
@@ -129,6 +127,7 @@ public class TurretInstaller : MonoBehaviour
             finalScale / tile.transform.localScale.y,
             finalScale / tile.transform.localScale.z
         );
+        
 
         // 5. Y축 위치 보정 (타일 위로 올리기)
         // 타일의 localScale.y가 매우 낮으므로 world 기준으로 살짝 올림
@@ -138,10 +137,10 @@ public class TurretInstaller : MonoBehaviour
         turret.name = $"Turret_{tile.x}_{tile.y}";
 
         // 6. 상태 업데이트
+        // 6. 상태 업데이트
         tile.IsTurretInstalled = true;
         tile.InstalledTurret = turret;
 
-        Debug.Log($"[TurretInstaller] 포탑 설치됨: Tile ({tile.x}, {tile.y}), " +
-                  $"Position {spawnPos}m");
+        //Debug.Log($"[TurretInstaller] 포탑 설치됨: Tile ({tile.x}, {tile.y}), " +$"Position {spawnPos}m");
     }
 }

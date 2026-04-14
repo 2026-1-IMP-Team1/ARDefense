@@ -1,5 +1,4 @@
 using UnityEngine;
-using static TurretStats;
 
 public class Turret : MonoBehaviour
 {
@@ -90,9 +89,8 @@ public class Turret : MonoBehaviour
 
     private void Init()
     {
-        AttackDamage = TurretStats.AttackDamage;
-        AttackRange = TurretStats.AttackRange;
-        AttackSpeed = TurretStats.AttackSpeed;
+        //TurretType에 따른 공격력, 공격속도, 공격범위 초기화
+        // Turret 하위 클래스 만들고 다시 제작
     }
 
     private void FindMonster()
