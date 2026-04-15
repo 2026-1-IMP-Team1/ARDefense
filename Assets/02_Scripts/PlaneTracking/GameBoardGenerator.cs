@@ -14,6 +14,9 @@ public class GameBoardGenerator : MonoBehaviour
     [Header("AR Plane Manager")]
     [SerializeField] private ARPlaneManager planeManager;
 
+    [Header("Chaos Gate")]
+    [SerializeField] private GameObject chaosGate;
+
     /// ================================================================= ///
     public bool IsGameBoardGenerated { get; private set; } = false;
     public GameObject GameBoard { get; private set; } = null;
@@ -121,7 +124,10 @@ public class GameBoardGenerator : MonoBehaviour
             }
         }
 
-        // 3. GameBoard를 다 생성했으므로 Plane Tracking을 정리한다.
+        // 3. Chaos Gate를 GameBoard에 맞추어 생성한다.
+        // PlaceChaosGate(halfD);
+
+        // 4. GameBoard를 다 생성했으므로 Plane Tracking을 정리한다.
         SetAllPlanesVisible(false);
         planeManager.enabled = false;
 
@@ -130,9 +136,19 @@ public class GameBoardGenerator : MonoBehaviour
                   $"총 보드 크기 {MinWidthOfPlane * 100f:F1}cm x {MinHeightOfPlane * 100f:F1}cm");
     }
 
+    private void PlaceChaosGate(float halfD)
+    {
+        // Vector3 gateLocalPos = new Vector3(0f, 0f, halfD);
+        GameObject gate = Instantiate(chaosGate, GameBoard.transform);
+    }
+
     private void SetAllPlanesVisible(bool visible)
     {
         foreach (ARPlane plane in planeManager.trackables)
+        {
             plane.gameObject.SetActive(visible);
+            Debug.Log($"{plane.name}");    
+        }
+        
     }
 }

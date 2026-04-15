@@ -34,6 +34,8 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
+    protected bool isDead;
+
     [Header("몬스터의 공격 수치에 관련한 변수 / 프로퍼티")]
 
     protected float attackDamage;
@@ -68,6 +70,7 @@ public abstract class Monster : MonoBehaviour
     public abstract void Init();
 
     // 실시간 몬스터 체력 관리 
+    /*
     private void Update()
     {
         if (hp <= 0)
@@ -75,10 +78,19 @@ public abstract class Monster : MonoBehaviour
             Die();
         }
     }
+    */
 
     public void TakeDamage(float damage)
     {
+        if (isDead) return;
+
         hp -= damage;
+        if (hp <= 0)
+        {
+            isDead = true;
+            Die();
+            Debug.Log($"{name} die");
+        }
     }
 
     protected virtual void Die()
@@ -95,8 +107,8 @@ public abstract class Monster : MonoBehaviour
                 break;
             case MonsterType.BOSS_MONSTER:
                 rewardGold = Gold.BOSS_MONSTER_GOLD;
-                // 보스 몬스터가 죽으면 세대가 넘어가도록 했습니다.
-                GameManager.Instance.phase++; 
+                // 세대교체 넣기 및및 웨이브 조절(웨이브 가중치 조절)
+                GameManager.Instance.phase++;
                 break;
         }
 

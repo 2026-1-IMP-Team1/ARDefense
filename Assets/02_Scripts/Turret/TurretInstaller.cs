@@ -1,8 +1,9 @@
 using UnityEngine;
-using UnityEngine.InputSystem.EnhancedTouch; // 추가됨
+using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 using static Tile;
+using static TurretCost;
 
 public class TurretInstaller : MonoBehaviour
 {
@@ -15,12 +16,10 @@ public class TurretInstaller : MonoBehaviour
     [Header("Turret Prefab")]
     [SerializeField] private GameObject turretPrefab;
 
-    [Header("포탑 스케일 배율 (1이면 TILE_SIZE와 동일)")]
-    [SerializeField, Range(0.1f, 1.5f)] private float turretScaleValue = 0.9f;
+    [Header("포탑 스케일 배율 (1이면 tileSize와 동일한 크기로 설정)")]
+    [SerializeField, Range(0.5f, 1f)] private float turretScaleValue = 0.9f;
 
-
-    [Header("타일 Layer Mask")]
-    [Header("타일 Layer Mask")]
+    [Header("타일 Layer Mask (특정 레이어만 터치 감지할 때 설정)")]
     [SerializeField] private LayerMask tileLayerMask = ~0;
 
     private void Awake()
@@ -28,7 +27,15 @@ public class TurretInstaller : MonoBehaviour
         if (cam == null) cam = Camera.main;
     }
 
-    // EnhancedTouch 활성화
+    private void Update()
+    {
+        // GameBoard가 생성되기 전에는 터치 입력을 받지 않습니다.
+        if (!gameBoardGenerator.IsGameBoardGenerated) return;
+
+        if (!TryGetTouchBeganPosition(out Vector2 screenPos)) return;
+        HandleTileTouch(screenPos);
+    }
+
     private void OnEnable()
     {
         EnhancedTouchSupport.Enable();
@@ -37,17 +44,6 @@ public class TurretInstaller : MonoBehaviour
     private void OnDisable()
     {
         EnhancedTouchSupport.Disable();
-    }
-
-    // EnhancedTouch 활성화
-
-
-    private void Update()
-    {
-        if (!gameBoardGenerator.IsGameBoardGenerated) return;
-
-        if (!TryGetTouchBeganPosition(out Vector2 screenPos)) return;
-        HandleTileTouch(screenPos);
     }
 
     private bool TryGetTouchBeganPosition(out Vector2 screenPos)
@@ -81,66 +77,59 @@ public class TurretInstaller : MonoBehaviour
 
         if (!Physics.Raycast(ray, out RaycastHit hit, 100f, tileLayerMask)) return;
 
+        // hit한 collider가 Tile인지 확인합니다.
         Tile tile = hit.collider.GetComponent<Tile>();
-        if (tile == null) return; //
+        if (tile == null) return;
 
+        // Tile이여도 이미 포탑이 설치된 tile이면 무시합니다.
         if (tile.IsTurretInstalled)
         {
-            Debug.Log($"[TurretInstaller] 이미 설치됨: ({tile.x}, {tile.y})");
-            Debug.Log($"[TurretInstaller] 이미 설치됨: ({tile.x}, {tile.y})");
+            Debug.Log($"[TurretInstaller] Tile ({tile.x}, {tile.y})에는 이미 포탑이 설치되어 있습니다.");
             return;
         }
 
-        // 골드 소모 체크
-        if (GoldManager.Instance != null)
-        {
-            if (!GoldManager.Instance.SpendGold(TurretCost.turretCost)) return;
-        }
-
-        // 골드 소모 체크
-        if (GoldManager.Instance != null)
-        {
-            if (!GoldManager.Instance.SpendGold(TurretCost.turretCost)) return;
-        }
-
+        if (!GoldManager.Instance.SpendGold(turretCost)) return;
         InstallTurret(tile);
     }
 
     private void InstallTurret(Tile tile)
     {
-        // 1. 부모(Tile)의 회전값 가져오기
+        // ── 포탑 월드 크기 계산 ──────────────────────────────
+        float turretSize = TILE_SIZE * turretScaleValue;
+
+        // ── 위치 계산 ────────────────────────────────────────
+        // lossyScale: 부모 포함 실제 월드 스케일
+        // tile.transform.up: AR 환경에서 보드가 기울어져도 올바른 방향 유지
+        float tileHalfHeight  = tile.transform.lossyScale.y * 0.5f;
+        float turretHalfHeight = turretSize * 0.5f; // 피벗이 오브젝트 중심에 있다고 가정
+
+        Vector3 spawnPos = tile.transform.position
+                        + tile.transform.up * (tileHalfHeight + turretHalfHeight);
+
+        // ── 회전 계산 ────────────────────────────────────────
         Quaternion boardRotation = gameBoardGenerator.GameBoard != null
             ? gameBoardGenerator.GameBoard.transform.rotation
             : Quaternion.identity;
 
-        // 2. 포탑 생성 (일단 위치는 타일 중심으로)
-        GameObject turret = Instantiate(turretPrefab, tile.transform.position, boardRotation);
-        
-        // 3. 부모 설정 (스케일 왜곡 방지를 위해 false 권장 혹은 설정 후 스케일 재조정)
-        turret.transform.SetParent(tile.transform);
-        
-        // 4. 스케일 설정 (부모가 매우 작다면 분모로 나누어 보정해야 함)
-        // 여기서는 TILE_SIZE 상수를 기준으로 계산
-        float finalScale = (TILE_SIZE * turretScaleValue);
-        turret.transform.localScale = new Vector3(
-            finalScale / tile.transform.localScale.x,
-            finalScale / tile.transform.localScale.y,
-            finalScale / tile.transform.localScale.z
-        );
-        
+        // ── 포탑 생성 ────────────────────────────────────────
+        GameObject turret = Instantiate(turretPrefab, spawnPos, boardRotation);
+        turret.transform.localScale = Vector3.one * turretSize;
 
-        // 5. Y축 위치 보정 (타일 위로 올리기)
-        // 타일의 localScale.y가 매우 낮으므로 world 기준으로 살짝 올림
-        float tileTopY = tile.transform.position.y + (tile.transform.localScale.y * 0.5f);
-        turret.transform.position = new Vector3(tile.transform.position.x, tileTopY, tile.transform.position.z);
+        // ── 비균등 스케일 상속 방지: Tile이 아닌 GameBoard의 자식으로 설정 ──
+        // Tile의 scale이 (0.1, 0.01, 0.1)처럼 비균등하면
+        // SetParent 시 Unity가 world scale 유지를 위해 local scale을 역산해 Y가 뻥튀기됨
+        Transform parentTransform = gameBoardGenerator.GameBoard != null
+            ? gameBoardGenerator.GameBoard.transform
+            : tile.transform.parent;
 
+        turret.transform.SetParent(parentTransform, worldPositionStays: true);
         turret.name = $"Turret_{tile.x}_{tile.y}";
 
-        // 6. 상태 업데이트
-        // 6. 상태 업데이트
+        // ── 타일 상태 업데이트 ───────────────────────────────
         tile.IsTurretInstalled = true;
         tile.InstalledTurret = turret;
 
-        //Debug.Log($"[TurretInstaller] 포탑 설치됨: Tile ({tile.x}, {tile.y}), " +$"Position {spawnPos}m");
+        Debug.Log($"[TurretInstaller] 포탑 설치됨: Tile ({tile.x}, {tile.y}), " +
+                $"Position {spawnPos}, Scale {turretSize:F3}m");
     }
 }
