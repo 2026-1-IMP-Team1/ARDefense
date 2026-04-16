@@ -1,8 +1,9 @@
 using UnityEngine;
+using static TurretStats;
 
 public class Turret : MonoBehaviour
 {
-    //protected TurretType type;
+    protected TurretType type;
 
     [Header("Health Point 변수 / 프로퍼티")]
     protected float hp;
@@ -87,10 +88,12 @@ public class Turret : MonoBehaviour
         }
     }
 
-    private void Init()
+    protected virtual void Init()
     {
-        //TurretType에 따른 공격력, 공격속도, 공격범위 초기화
-        // Turret 하위 클래스 만들고 다시 제작
+        hp = TURRET_HP;
+        attackDamage = TURRET_ATTACK_DAMAGE;
+        attackRange = TURRET_ATTACK_RANGE;
+        attackSpeed = TURRET_ATTACK_SPEED;
     }
 
     private void FindMonster()

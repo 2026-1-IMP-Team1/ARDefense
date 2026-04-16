@@ -2,6 +2,8 @@ using UnityEngine;
 
 public static class TurretCost
 {
-    [Header("포탑 설치 비용")]
-    public static int turretCost => 30 + GameManager.Instance.phase;
+    [Header("Turret Cost")]
+    public static int MIDDLE_AGE_TURRET_COST => 10;
+    public static int MODERN_AGE_TURRET_COST => 25;
+    public static int FUTURE_AGE_TURRET_COST => 50;
 }

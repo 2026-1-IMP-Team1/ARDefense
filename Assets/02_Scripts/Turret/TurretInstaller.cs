@@ -88,8 +88,26 @@ public class TurretInstaller : MonoBehaviour
             return;
         }
 
-        if (!GoldManager.Instance.SpendGold(turretCost)) return;
+        if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
         InstallTurret(tile);
+    }
+
+    private int MeasureTurretCost()
+    {
+        switch (GameManager.Instance.CurrentAge)
+        {
+            case GameAge.MIDDLE_AGE :
+                return MIDDLE_AGE_TURRET_COST;
+            
+            case GameAge.MODERN_AGE :
+                return MODERN_AGE_TURRET_COST;
+            
+            case GameAge.FUTURE_AGE :
+                return FUTURE_AGE_TURRET_COST;
+
+            default :
+                return -1;
+        }
     }
 
     private void InstallTurret(Tile tile)

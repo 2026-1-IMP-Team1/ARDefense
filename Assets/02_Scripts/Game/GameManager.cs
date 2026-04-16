@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private GameFlowState currentState;
+    private GameAge currentAge;
 
     // 웨이브를 만들어 "웨이브당 추가 골드 가중치"와 "몬스터 추가 공격력 및 체력", "세대변화"를 추가하면 될 것같습니다.
     public int wave = 1;
@@ -30,6 +31,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public GameAge CurrentAge
+    {
+        get
+        {
+            return currentAge;
+        }
+
+        set
+        {
+            currentAge = value;
+        }
+    }
+
     void Awake()
     {
         // 31 ~ 38 라인도 싱글톤 패턴과 관련 있는 코드입니다.
@@ -45,6 +59,9 @@ public class GameManager : MonoBehaviour
         
         // 게임을 완전히 처음 시작할 때는 일단 GAME_START 상태로 시작합니다.
         currentState = GameFlowState.GAME_START;
+
+        // 게임을 완전히 처음 시작할 때는 일단 MIDDLE_AGE 상태로 시작합니다.
+        currentAge = GameAge.MIDDLE_AGE;
     }
 
     void OnEnable()

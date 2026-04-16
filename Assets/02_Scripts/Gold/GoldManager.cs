@@ -46,6 +46,12 @@ public class GoldManager : MonoBehaviour
 
     public bool SpendGold(int goldToSpend)
     {
+        if (goldToSpend == -1)
+        {
+            Debug.Log("잘못된 골드 소비 경로로 접근하였습니다.");
+            return false;
+        }
+
         // 골드 소비 로직 구현
         if (currentGold < goldToSpend)
         {
