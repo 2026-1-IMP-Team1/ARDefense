@@ -28,11 +28,8 @@ public class GameUIManager : MonoBehaviour
         MainUI.SetActive(true);
         OptionUI.SetActive(false);
         PlantUI.SetActive(false);
-    }
 
-    // UI 관련 이벤트 구독하고 관리하시면 됩니다
-    void OnEnable()
-    {
+        // 자꾸 Awake랑 Enable이랑 GoldManager 싱글톤 시점이 어중간해서 Start에서 구독하게 했습니다.
         GoldManager.Instance.OnGoldChanged += GoldNumManager;
     }
 
@@ -122,6 +119,4 @@ public class GameUIManager : MonoBehaviour
             }
         }
     }
-
-    
 }
