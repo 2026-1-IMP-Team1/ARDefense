@@ -30,6 +30,9 @@ public class GameBoardGenerator : MonoBehaviour
     [SerializeField] private Button noButton;
     [SerializeField] private TextMeshProUGUI findPlaceText;
 
+    [Header("Player")]
+    [SerializeField] private GameObject player;
+
     /// ================================================================= ///
     public bool IsGameBoardGenerated { get; private set; } = false;
     public GameObject GameBoard { get; private set; } = null;
@@ -198,6 +201,11 @@ public class GameBoardGenerator : MonoBehaviour
             Debug.Log($"[GameBoardGenerator] GameBoard 생성: {columns} x {rows} 타일 그리드, " +
                     $"타일 크기 {TILE_SIZE * 100f:F1}cm, " +
                     $"총 보드 크기 {MinWidthOfPlane * 100f:F1}cm x {MinHeightOfPlane * 100f:F1}cm");
+
+            GameManager.Instance.CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+
+            SetPlayerPos();
+            SetChaosGatePos();
         }
         else
         {
@@ -212,6 +220,18 @@ public class GameBoardGenerator : MonoBehaviour
 
             isWaitingUserSelect = false;
         }
+    }
+
+    private void SetPlayerPos()
+    {
+        GameObject playerObj = Instantiate(player, GameBoard.transform, false);
+
+        playerObj.transform.position += new Vector3(-MinWidthOfPlane / 2.0f, 0, 0);
+    }
+
+    private void SetChaosGatePos()
+    {
+        chaosGate.SetActive(true);
     }
 
     private void Yes()

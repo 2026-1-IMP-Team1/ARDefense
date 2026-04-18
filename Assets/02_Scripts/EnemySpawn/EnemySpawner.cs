@@ -36,6 +36,13 @@ public class EnemySpawner : MonoBehaviour
         {
             if (boardGenerator.GameBoard != null && boardGenerator.GameBoard.transform.childCount > 0)
             {
+                if (GameManager.Instance.CurrentState == GameFlowState.BEFORE_GATE_OPEN)
+                {
+                    Debug.Log("BEFORE_GATE_OPEN");
+                    hasStartedWave = false;
+                    return;
+                }
+
                 hasStartedWave = true;
                 StartCoroutine(SimpleSpawnSequence());
             }
@@ -77,6 +84,6 @@ public class EnemySpawner : MonoBehaviour
             
             yield return new WaitForSeconds(2.0f);
         }
-        GameManager.Instance.wave++;
+        GameManager.Instance.Wave++;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -6,11 +7,37 @@ public class GameManager : MonoBehaviour
     // Instance 변수입니다. 자세한 내용은 '싱글톤(Singleton) 패턴'에 대해 검색해보세요!
     public static GameManager Instance { get; private set; }
 
+    [Tooltip("Event")]
+    public event Action IsGameStateBeforeGateOpen;
+
     private GameFlowState currentState;
     private GameAge currentAge;
 
     // 웨이브를 만들어 "웨이브당 추가 골드 가중치"와 "몬스터 추가 공격력 및 체력", "세대변화"를 추가하면 될 것같습니다.
-    public int wave = 1;
+    public int wave = 0;
+    public int Wave
+    {
+        get
+        {
+            return wave;
+        }
+
+        set
+        {
+            wave = value;
+
+            if (wave % 3 == 1)
+            {
+                currentState = GameFlowState.NORMAL_MONSTER_SPAWN;
+            }
+            else if (wave % 3 == 2) {
+                currentState = GameFlowState.ELITE_MONSTER_SPAWN;
+            }
+            else if (wave % 3 == 0) {
+                currentState = GameFlowState.BOSS_MONSTER_SPAWN;
+            }
+        }
+    }
     public int phase;
     
     // 외부 스크립트에서 currentState를 참조하고 싶을 때는, 프로퍼티인 CurrentState를 참조하시면 됩니다.
@@ -28,6 +55,11 @@ public class GameManager : MonoBehaviour
         set
         {
             currentState = value;
+            
+            if (currentState == GameFlowState.BEFORE_GATE_OPEN)
+            {
+                IsGameStateBeforeGateOpen?.Invoke();
+            }
         }
     }
 
@@ -84,6 +116,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        /*
         // 3 웨이브 당 1 페이즈로 만들었습니다.
         // 3의 나머지를 이용하여서 만들었습니다.
         // 자동적으로 웨이브는 증가하도록 만들었고, 웨이브 가중치는 증가하면서 currentState도 변경되도록 만들었습니다.
@@ -97,7 +130,11 @@ public class GameManager : MonoBehaviour
         else if (wave % 3 == 0) {
             currentState = GameFlowState.BOSS_MONSTER_SPAWN;
         }
+        */
 
+        // 리팩터링 ::
+        // Update에서 계속 currentState를 갱신하게 하는 방법보다, wave 값이 바뀔 때만 currentState를 갱신하도록 만들었습니다.
+        // 해당 내용 wave 변수를 포커싱하는 Wave 프로퍼티를 만들어서 set 블록에 구현하였습니다!! 참고해주세요
 
         if (currentState == GameFlowState.BEFORE_GATE_OPEN)
         {
