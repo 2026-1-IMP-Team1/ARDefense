@@ -29,6 +29,18 @@ public class GameUIManager : MonoBehaviour
         OptionUI.SetActive(false);
         PlantUI.SetActive(false);
     }
+
+    // UI 관련 이벤트 구독하고 관리하시면 됩니다
+    void OnEnable()
+    {
+        GoldManager.Instance.OnGoldChanged += GoldNumManager;
+    }
+
+    void OnDisable()
+    {
+        GoldManager.Instance.OnGoldChanged -= GoldNumManager;
+    }
+
     // 옵션 UI를 열 때 MainUI를 비활성화하고 OptionUI를 활성화하는 메서드
     public void OpenOptionUI()
     {
@@ -60,7 +72,7 @@ public class GameUIManager : MonoBehaviour
     // 골드 값을 UI에 표시하는 메서드
     public void GoldNumManager()
     {
-        GoldText.text = Gold.ToString();
+        GoldText.text = $"{GoldManager.Instance.Gold}";
     }
 
     // 경과 시간을 계산하여 분과 초로 나누어 UI에 표시하는 메서드

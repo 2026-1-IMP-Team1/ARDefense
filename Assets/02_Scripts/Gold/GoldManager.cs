@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 using static Gold;
 
 public class GoldManager : MonoBehaviour
 {
     public static GoldManager Instance { get; private set; }
+
+    public event Action OnGoldChanged;
 
     [Header("골드 변수 / 프로퍼티")]
 
@@ -19,6 +22,7 @@ public class GoldManager : MonoBehaviour
         set
         {
             currentGold = value;
+            OnGoldChanged?.Invoke();
         }
     }
 
