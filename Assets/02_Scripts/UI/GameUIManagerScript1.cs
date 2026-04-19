@@ -113,9 +113,10 @@ public class GameUIManager : MonoBehaviour
     {
         GoldNumManager();
         TimeNumManager();
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Input.GetMouseButtonDown(0))
         {
+            // 마우스 눌었을 때만 발동되게 바꿨습니다[kwj]
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 if (hit.collider.CompareTag("PlantSpot"))

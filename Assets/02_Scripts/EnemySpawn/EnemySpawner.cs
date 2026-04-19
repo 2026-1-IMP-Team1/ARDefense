@@ -84,6 +84,16 @@ public class EnemySpawner : MonoBehaviour
             
             yield return new WaitForSeconds(2.0f);
         }
-        GameManager.Instance.Wave++;
+
+        // 3번째 보스 페이즈(마지막 페이즈)가 끝났다면 다음 웨이브로 즉시 넘어가지 않고 정비 상태로 변경[kwj]
+        if (GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)
+        {
+            GameManager.Instance.CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+        }
+        else
+        {
+            GameManager.Instance.Wave++;
+        }
+        hasStartedWave = false; // 다음 웨이브 진행을 위해 초기화
     }
 }

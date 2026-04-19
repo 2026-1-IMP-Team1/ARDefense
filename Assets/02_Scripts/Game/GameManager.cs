@@ -25,16 +25,17 @@ public class GameManager : MonoBehaviour
         set
         {
             wave = value;
-
+            // 3 웨이브 당 1 페이즈로 만들었습니다.
+            // 3의 나머지를 이용하여서 만들었습니다.[kwj]
             if (wave % 3 == 1)
             {
-                currentState = GameFlowState.NORMAL_MONSTER_SPAWN;
+                CurrentState = GameFlowState.NORMAL_MONSTER_SPAWN;
             }
             else if (wave % 3 == 2) {
-                currentState = GameFlowState.ELITE_MONSTER_SPAWN;
+                CurrentState = GameFlowState.ELITE_MONSTER_SPAWN;
             }
             else if (wave % 3 == 0) {
-                currentState = GameFlowState.BOSS_MONSTER_SPAWN;
+                CurrentState = GameFlowState.BOSS_MONSTER_SPAWN;
             }
         }
     }
@@ -110,7 +111,7 @@ public class GameManager : MonoBehaviour
             // Start에서 GAME_START 페이즈에 대한 처리를 끝내고 나면,
             // BEFORE_GATE_OPEN 페이즈로 넘어갑니다. 본격적으로 게임을 시작합니다.
             // 골드 사용, 포탑 배치 등등 ...
-            currentState = GameFlowState.BEFORE_GATE_OPEN;
+            CurrentState = GameFlowState.BEFORE_GATE_OPEN;
         }
     }
 
@@ -157,4 +158,3 @@ public class GameManager : MonoBehaviour
         }
     }
 }
-
