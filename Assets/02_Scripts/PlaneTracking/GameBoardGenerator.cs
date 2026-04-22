@@ -1,7 +1,10 @@
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using UnityEngine.UI;
 using static Tile;
+using TMPro;
+using System.Collections;
 
 public class GameBoardGenerator : MonoBehaviour
 {
@@ -14,6 +17,22 @@ public class GameBoardGenerator : MonoBehaviour
     [Header("AR Plane Manager")]
     [SerializeField] private ARPlaneManager planeManager;
 
+    [Header("AR Session")]
+    [SerializeField] private ARSession arSession;
+
+    [Header("Chaos Gate")]
+    [SerializeField] private GameObject chaosGate;
+
+    [Header("Game Board Set UI")]
+    [SerializeField] private GameObject gameBoardSetUI;
+    [SerializeField] private GameObject window;
+    [SerializeField] private Button yesButton;
+    [SerializeField] private Button noButton;
+    [SerializeField] private TextMeshProUGUI findPlaceText;
+
+    [Header("Player")]
+    [SerializeField] private GameObject player;
+
     /// ================================================================= ///
     public bool IsGameBoardGenerated { get; private set; } = false;
     public GameObject GameBoard { get; private set; } = null;
@@ -21,20 +40,31 @@ public class GameBoardGenerator : MonoBehaviour
 
     private float MinWidthOfPlane => columns * TILE_SIZE;
     private float MinHeightOfPlane => rows * TILE_SIZE;
+    private bool isGameBoardSet; // 플레이어가 플레이할 게임 보드 선택했는지 유무
+    private bool hasUserSelected; // 플레이어가 Yes, NO 선ㅇ택했는지 유무
+    private bool isWaitingUserSelect; // 플레이어가 선택하는 중인지 유무 (사실 !hasUserSelected긴 합니다. )
 
     private void OnEnable()
     {
         planeManager.trackablesChanged.AddListener(OnTrackablesChanged);
+        gameBoardSetUI.SetActive(true);
+        window.SetActive(false);
+
+        yesButton.onClick.AddListener(Yes);
+        noButton.onClick.AddListener(No);
     }
 
     private void OnDisable()
     {
         planeManager.trackablesChanged.RemoveListener(OnTrackablesChanged);
+
+        yesButton.onClick.RemoveListener(Yes);
+        noButton.onClick.RemoveListener(No);
     }
 
     private void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARPlane> args)
     {
-        if (IsGameBoardGenerated) return;
+        if (IsGameBoardGenerated || isWaitingUserSelect) return;
 
         foreach (ARPlane plane in args.added)
         {
@@ -65,7 +95,8 @@ public class GameBoardGenerator : MonoBehaviour
 
     private void PlaceGameBoard(ARPlane plane)
     {
-        IsGameBoardGenerated = true;
+        isWaitingUserSelect = true;
+
         PlaneOfGameBoard = plane;
 
         GameBoard = new GameObject("GameBoard");
@@ -121,18 +152,97 @@ public class GameBoardGenerator : MonoBehaviour
             }
         }
 
-        // 3. GameBoard를 다 생성했으므로 Plane Tracking을 정리한다.
-        SetAllPlanesVisible(false);
-        planeManager.enabled = false;
-
-        Debug.Log($"[GameBoardGenerator] GameBoard 생성: {columns} x {rows} 타일 그리드, " +
-                  $"타일 크기 {TILE_SIZE * 100f:F1}cm, " +
-                  $"총 보드 크기 {MinWidthOfPlane * 100f:F1}cm x {MinHeightOfPlane * 100f:F1}cm");
+        // 유저에게 UI 띄우기
+        StartCoroutine(ShowGameBoardSelectUI());
     }
 
-    private void SetAllPlanesVisible(bool visible)
+    /*private void PlaceChaosGate(float halfD)
+    {
+        // Vector3 gateLocalPos = new Vector3(0f, 0f, halfD);
+        GameObject gate = Instantiate(chaosGate, GameBoard.transform);
+    }*/
+
+    /*private void SetAllPlanesVisible(bool visible)
     {
         foreach (ARPlane plane in planeManager.trackables)
+        {
             plane.gameObject.SetActive(visible);
+            Debug.Log($"{plane.name}");    
+        }
+    }*/
+
+    IEnumerator ShowGameBoardSelectUI()
+    {
+        hasUserSelected = false;
+        isWaitingUserSelect = true;
+
+        window.SetActive(true);
+
+        yield return new WaitUntil (() => hasUserSelected);
+
+        // 선택 이후 .. 
+
+        window.SetActive(false);
+
+        if (isGameBoardSet)
+        {
+            // 3. Chaos Gate를 GameBoard에 맞추어 생성한다.
+            // PlaceChaosGate(halfD);
+
+            // 4. GameBoard를 다 생성했으므로 Plane Tracking을 정리한다.
+            IsGameBoardGenerated = true;
+
+            isWaitingUserSelect = false;
+
+            gameBoardSetUI.SetActive(false);
+
+            planeManager.enabled = false;
+
+            Debug.Log($"[GameBoardGenerator] GameBoard 생성: {columns} x {rows} 타일 그리드, " +
+                    $"타일 크기 {TILE_SIZE * 100f:F1}cm, " +
+                    $"총 보드 크기 {MinWidthOfPlane * 100f:F1}cm x {MinHeightOfPlane * 100f:F1}cm");
+
+            GameManager.Instance.CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+
+            SetPlayerPos();
+            SetChaosGatePos();
+        }
+        else
+        {
+            IsGameBoardGenerated = false;
+
+            Destroy(GameBoard);
+            GameBoard = null;
+            PlaneOfGameBoard = null;
+
+            arSession.Reset();
+            Debug.Log("[GameBoardGenerator] GameBoard를 다시 탐색합니다.");
+
+            isWaitingUserSelect = false;
+        }
+    }
+
+    private void SetPlayerPos()
+    {
+        GameObject playerObj = Instantiate(player, GameBoard.transform, false);
+
+        playerObj.transform.position += new Vector3(-MinWidthOfPlane / 2.0f, 0, 0);
+    }
+
+    private void SetChaosGatePos()
+    {
+        chaosGate.SetActive(true);
+    }
+
+    private void Yes()
+    {
+        isGameBoardSet = true;
+        hasUserSelected = true;
+    }
+
+    private void No()
+    {
+        isGameBoardSet = false;
+        hasUserSelected = true;
     }
 }

@@ -34,6 +34,8 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
+    protected bool isDead;
+
     [Header("몬스터의 공격 수치에 관련한 변수 / 프로퍼티")]
 
     protected float attackDamage;
@@ -68,11 +70,26 @@ public abstract class Monster : MonoBehaviour
     public abstract void Init();
 
     // 실시간 몬스터 체력 관리 
+    /*
     private void Update()
     {
         if (hp <= 0)
         {
             Die();
+        }
+    }
+    */
+
+    public void TakeDamage(float damage)
+    {
+        if (isDead) return;
+
+        hp -= damage;
+        if (hp <= 0)
+        {
+            isDead = true;
+            Die();
+            Debug.Log($"{name} die");
         }
     }
 
@@ -91,7 +108,7 @@ public abstract class Monster : MonoBehaviour
             case MonsterType.BOSS_MONSTER:
                 rewardGold = Gold.BOSS_MONSTER_GOLD;
                 // 세대교체 넣기 및및 웨이브 조절(웨이브 가중치 조절)
-                GameManager.Instance.wave += 1;
+                GameManager.Instance.phase++;
                 break;
         }
 
@@ -104,5 +121,4 @@ public abstract class Monster : MonoBehaviour
         // 3. 몬스터 오브젝트 파괴
         Destroy(gameObject);
     }
-
 }

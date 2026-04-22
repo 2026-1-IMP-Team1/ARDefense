@@ -22,13 +22,35 @@ public class GameUIManager : MonoBehaviour
     // 터렛 설치를 위한 UI 변수
     public GameObject PlantUI;
 
+    // 현재 BEFORE_GATE_OPEN 상태일 때, 유저 게임 준비(포탑 설치, 업그레이드 등 돈 사용) 및 준비 다 되면 시작 버튼 있는 캔버스 UI
+    public GameObject phaseReadyUI;
+    public Button readyButton;
+
     // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
     void Start()
     {
         MainUI.SetActive(true);
         OptionUI.SetActive(false);
         PlantUI.SetActive(false);
+        phaseReadyUI.SetActive(false);
+
+        // 자꾸 Awake랑 Enable이랑 GoldManager 싱글톤 시점이 어중간해서 Start에서 구독하게 했습니다.
+        GoldManager.Instance.OnGoldChanged += GoldNumManager;
+        GameManager.Instance.IsGameStateBeforeGateOpen += ShowPhaseReadyUI;
     }
+
+    void OnEnable()
+    {
+        readyButton.onClick.AddListener(OnReadyButtonClicked);
+    }
+
+    void OnDisable()
+    {
+        GoldManager.Instance.OnGoldChanged -= GoldNumManager;
+        GameManager.Instance.IsGameStateBeforeGateOpen -= ShowPhaseReadyUI;
+        readyButton.onClick.RemoveListener(OnReadyButtonClicked);
+    }
+
     // 옵션 UI를 열 때 MainUI를 비활성화하고 OptionUI를 활성화하는 메서드
     public void OpenOptionUI()
     {
@@ -60,7 +82,7 @@ public class GameUIManager : MonoBehaviour
     // 골드 값을 UI에 표시하는 메서드
     public void GoldNumManager()
     {
-        GoldText.text = Gold.ToString();
+        GoldText.text = $"{GoldManager.Instance.Gold}";
     }
 
     // 경과 시간을 계산하여 분과 초로 나누어 UI에 표시하는 메서드
@@ -91,9 +113,10 @@ public class GameUIManager : MonoBehaviour
     {
         GoldNumManager();
         TimeNumManager();
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Input.GetMouseButtonDown(0))
         {
+            // 마우스 눌었을 때만 발동되게 바꿨습니다[kwj]
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 if (hit.collider.CompareTag("PlantSpot"))
@@ -111,5 +134,16 @@ public class GameUIManager : MonoBehaviour
         }
     }
 
-    
+    private void ShowPhaseReadyUI()
+    {
+        phaseReadyUI.SetActive(true);
+    }
+
+    private void OnReadyButtonClicked()
+    {
+        Debug.Log("NORMAL_MONSTER_SPAWN");
+        GameManager.Instance.Wave++; // wave = 1이 되므로, CurrentState = NORMAL_MONSTER_SPAWN;
+
+        phaseReadyUI.SetActive(false);
+    }
 }

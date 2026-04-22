@@ -5,11 +5,13 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - PlantSpot
+  - Turret
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Turret
   - Water
   - UI
   - 

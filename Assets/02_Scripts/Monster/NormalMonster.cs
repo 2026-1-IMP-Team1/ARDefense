@@ -10,6 +10,8 @@ public sealed class NormalMonster : Monster
         hp = NORMAL_MONSTER_HP;
         attackDamage = NORMAL_MONSTER_ATTACK_DAMAGE;
         attackSpeed = NORMAL_MONSTER_ATTACK_SPEED;
+
+        isDead = false;
     }
 
     void Update()
