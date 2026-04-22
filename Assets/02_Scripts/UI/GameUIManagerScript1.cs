@@ -57,6 +57,7 @@ public class GameUIManager : MonoBehaviour
         MainUI.SetActive(false);
         OptionUI.SetActive(true);
     }
+
     // 옵션 UI를 닫을 때 MainUI를 활성화하고 OptionUI를 비활성화하는 메서드
     public void CloseOptionUI()
     {
@@ -84,7 +85,7 @@ public class GameUIManager : MonoBehaviour
     {
         GoldText.text = $"{GoldManager.Instance.Gold}";
     }
-
+    
     // 경과 시간을 계산하여 분과 초로 나누어 UI에 표시하는 메서드
     public void TimeNumManager()
     {
@@ -109,31 +110,13 @@ public class GameUIManager : MonoBehaviour
     }
 
     // 매 프레임마다 골드 값과 경과 시간을 업데이트하는 메서드
+    
     void Update()
     {
         GoldNumManager();
         TimeNumManager();
-        if (Input.GetMouseButtonDown(0))
-        {
-            // 마우스 눌었을 때만 발동되게 바꿨습니다[kwj]
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                if (hit.collider.CompareTag("PlantSpot"))
-                {
-                    OpenPlantUI();
-                }
-                else
-                {
-                    PlantUI.SetActive(false);
-                }
-            } else
-            {
-                PlantUI.SetActive(false);
-            }
-        }
     }
-
+    
     private void ShowPhaseReadyUI()
     {
         phaseReadyUI.SetActive(true);

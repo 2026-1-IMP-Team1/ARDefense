@@ -1,0 +1,197 @@
+[33mcommit 75a748e0ce8d89ca4b229a501fa0cd9dcddf6faa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev/lyh[m[33m)[m
+Author: lyh2003sp <zo2003554@gmail.com>
+Date:   Wed Apr 8 22:17:19 2026 +0900
+
+    씬 하나로 합치기 대작전 성공
+
+[33mcommit 9b0a390ebff67347067ca6ef298eb058a4075ab9[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Wed Apr 8 20:50:39 2026 +0900
+
+    Fix, File: 우진 GoldManager + GameManager 오브젝트 GameBoard 만드는 씬에 세팅 완료
+
+[33mcommit 01d45dd54746232634415cf2bc2fc43852fd9ed6[m
+Merge: 4333c3b cb5d75a
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Tue Apr 7 10:22:39 2026 +0900
+
+    Merge branch 'develop' of https://github.com/2026-1-IMP-Team1/Midterm-AR-Project into develop
+
+[33mcommit cb5d75afcdedbde60eac29f3c1d16a0423326451[m
+Merge: 2fcf305 818e618
+Author: Yoon <hanyungyeong48@gmail.com>
+Date:   Tue Apr 7 10:20:58 2026 +0900
+
+    merge develop into remote develop
+
+[33mcommit 2fcf30583e472f61dda3ced984a3d60fb6a50846[m
+Author: Yoon <hanyungyeong48@gmail.com>
+Date:   Tue Apr 7 10:17:42 2026 +0900
+
+    게이트, 스포너 생성
+
+[33mcommit 4333c3bd89e306d13f8e0302505504c07301b01d[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Tue Apr 7 10:16:08 2026 +0900
+
+    Delete: 중복되어 있던 GameFlowState.cs 파일 하나 삭제
+
+[33mcommit 818e618e79f244397391d5d38765f578c64e3358[m
+Merge: fb3c44f a287a4b
+Author: lyh2003sp <zo2003554@gmail.com>
+Date:   Mon Apr 6 22:57:43 2026 +0900
+
+    Merge branch 'dev/lyh' into develop
+
+[33mcommit a287a4b9f6e8f715defc484a81161d1d3812818f[m
+Author: lyh2003sp <zo2003554@gmail.com>
+Date:   Mon Apr 6 22:57:03 2026 +0900
+
+    메인화면 UI, 간단한 인게임 UI 구현
+
+[33mcommit fb3c44f123f631642d789c89cf166647519ef3cf[m
+Author: 권우진 <k553952684@gamil.com>
+Date:   Mon Apr 6 21:41:26 2026 +0900
+
+    kwj의 Gold조정 및 Wave기능 추가로 인한 WaveWeight기능 추가
+
+[33mcommit 10a215bcad4f3afd54789ca2499cb0024426cae6[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Fri Apr 3 01:12:57 2026 +0900
+
+    Fix: 씬에 테스트용 더미 오브젝트들 삭제
+
+[33mcommit a021c05331a9a5954810b7ee48a78c6986f475d9[m
+Merge: 8b01934 7330b12
+Author: Shin ICheol <shinieechul2012@naver.com>
+Date:   Fri Apr 3 01:03:12 2026 +0900
+
+    Merge pull request #2 from 2026-1-IMP-Team1/feat/plane-tracking-and-turret-installation
+    
+    Plane Tracking하여 탐색된 Plane에 GameBoard 생성 및 GameBoard의 각 단위 타일에 터치 시 Prefab 생성하는 초기 기능 구현
+
+[33mcommit 7330b12e6865ad39a5c7aff21f44ad81b9029afc[m[33m ([m[1;31morigin/feat/plane-tracking-and-turret-installation[m[33m)[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Fri Apr 3 00:52:58 2026 +0900
+
+    Feat: GameBoard에 생성된 Tile에 모바일 터치 / 유니티 에디터 게임 뷰에서 마우스 클릭 시 해당 터치된 Tile 위에 turretPrefab 생성하는 기능 추가
+    
+    아직 잠재적인 버그 있습니다. spawnPos 로직에서 turretPrefab의 localScale.y가 10배 뻥튀기 되는 버그가 있습니다
+    
+    추가로 고려해야 할 거 1. 생성된 GameBoard에서 게임 진행을 확정지을 것인지 물어보는 UI 추가해야 할 듯 합니다 (원하지 않는 위치에 생성되어 다시 Plane을 찾고 싶어할 수도 있을 거 같아요)
+    
+    추가로 고려해야 할 거 2. 각 타일마다 테두리 보이게 할지 말지 (Outline 관련 에셋 사용할 수 있습니다)
+
+[33mcommit 45e1b69e81e7ed397d464fdbf17340b527a78404[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Thu Apr 2 23:30:28 2026 +0900
+
+    Refactor: 가독성을 위해 주석 수정 및 메서드명 수정
+
+[33mcommit 4f100f4ab89e4e87013247cc696307532d0a4135[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Thu Apr 2 22:22:16 2026 +0900
+
+    Feat: ARPlaneManager로 GameBoard를 생성할 수 있는 규격의 Plane을 찾고, 해당 Plane에 columns X rows 만큼의 단위 타일 생성하여 GameBoard 생성하도록 하였습니다.
+
+[33mcommit 7954c6c94f3a925de490dbafbc82dfc10964d492[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Thu Apr 2 20:33:25 2026 +0900
+
+    Delete: ARPlaneTracker.cs, ARTileGenerator.cs 삭제 (ARPlaneManager 기반 PlaneTracking으로 다시 설계)
+
+[33mcommit 3785e21261e54a14b3e032fdaec338045caeaec0[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Wed Apr 1 10:03:39 2026 +0900
+
+    Feat: 특정 가로/세로 사이즈 이상의 plane을 tracking 하는 기능 추가 (ARPlaneTracker.cs)
+
+[33mcommit 8b01934c922a8afd3e0833902880abfcfdba9d38[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Tue Mar 31 12:58:22 2026 +0900
+
+    Feat: Gold 관련 기본적인 스크립트 추가
+
+[33mcommit eab884b9c63496257f3679cdf095b1a41921abf5[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Sun Mar 29 14:33:57 2026 +0900
+
+    Refactor: Boss, Elite, NormalMonster 클래스랑 Init 메서드에 sealed 키워드 추가 (해당 클래스들 밑으로 더 이상 상속 필요 X)
+
+[33mcommit fa8d08fe028a1445794e0e3eaf65d032aa38ce9e[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Sun Mar 29 14:30:28 2026 +0900
+
+    File, Feat: 스크립트 폴더 구조 간단하게 정리(Game 폴더 추가), 포탑(Turret) 관련 스크립트 추가
+
+[33mcommit b0cbaae37029891f626b12b4d50b5216cf614a14[m
+Author: trueblue2222 <shinieechul2012@naver.com>
+Date:   Wed Mar 25 23:36:57 2026 +0900
+
+    Refactor: Monster 스탯 관련한 값(상수)들 다 MonsterStats 클래스에 선언하였습니다 (일일이 스탯별로 using 하는 게 나중에 너무 귀찮을 거 같아요)
+
+[33mcommit 434fa8df510d9cb1832557c724387e167b68e736[m
+Author: trueblue2222 <shinieechul2012@naver.com>
+Date:   Wed Mar 25 23:25:32 2026 +0900
+
+    Feat: Monster 관련한 클래스들 초기 구조 설계 중입니다.
+
+[33mcommit 8176b4832766ffae484043a80bf0bc89ad4694d0[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Tue Mar 24 16:06:46 2026 +0900
+
+    Feat: 게임의 흐름 상태를 관리하는 GameFlowState.cs 및 게임을 전반적으로 관리하는 GameManager.cs 초기 로직 구현
+
+[33mcommit e865fe79594172196633efa0fb257a4a905a60fb[m
+Merge: 9a0e842 e743ffd
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Tue Mar 24 12:54:50 2026 +0900
+
+    Merge branch 'develop' of https://github.com/2026-1-IMP-Team1/Midterm-AR-Project into develop
+
+[33mcommit e743ffd8466d7342a48aac3a96dd176358f34706[m
+Merge: 04128ef 336c082
+Author: 권우진 <k553952684@gamil.com>
+Date:   Tue Mar 24 11:39:23 2026 +0900
+
+    Merge branch 'develop' of https://github.com/2026-1-IMP-Team1/Midterm-AR-Project into develop
+
+[33mcommit 9a0e842b00bea8a20b985f4e599d1508ac457d76[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Tue Mar 24 11:31:26 2026 +0900
+
+    tesetsee
+
+[33mcommit 04128efabe4aff62dd8c3ed801e14305c93d19e1[m
+Author: 권우진 <k553952684@gamil.com>
+Date:   Tue Mar 24 11:29:24 2026 +0900
+
+    make plane
+
+[33mcommit 336c082cc6d15ce3e4c0227b8ef8161a137daf09[m
+Author: Yoon <hanyungyeong48@gmail.com>
+Date:   Tue Mar 24 11:29:23 2026 +0900
+
+    Add sphere
+
+[33mcommit 9bd954ebf461974067b760c38ad216612f1bac6a[m
+Author: trueblue222 <shinieechul2012@naver.com>
+Date:   Tue Mar 24 00:07:48 2026 +0900
+
+    Chore, File: .gitignore에 AR Foundation Remote 패키지 import하고 실행한 후, 관련 파일들 추가하였습니다.
+    
+    안드로이드 기준으로 진행하였으며, iOS와 호환이 잘 될지는 잘 모르겠습니다 ㅠㅠ
+    
+    AR Foundation Remote 관련한 파일은 깃허브 레포에서 받는 게 아니라, 몰미프 강의자료에 올려주신 패키지로 본인 개발환경에서 직접 따로 import 해주셔야 합니다!
+
+[33mcommit eb3d4dd52bf629527795d20155d46ea618941bfb[m
+Author: trueblue2222 <shinieechul2012@naver.com>
+Date:   Mon Mar 23 23:09:54 2026 +0900
+
+    File: test용 ARScene 생성
+
+[33mcommit 82ec8be8f725324b0351c1185013f64e82a5b102[m
+Author: trueblue2222 <shinieechul2012@naver.com>
+Date:   Mon Mar 23 22:57:49 2026 +0900
+
+    Chore: AR Mobile 템플릿 프로젝트로 git 초기 세팅

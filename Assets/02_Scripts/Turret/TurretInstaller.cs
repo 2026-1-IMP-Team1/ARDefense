@@ -22,6 +22,11 @@ public class TurretInstaller : MonoBehaviour
     [Header("타일 Layer Mask (특정 레이어만 터치 감지할 때 설정)")]
     [SerializeField] private LayerMask tileLayerMask = ~0;
 
+    //포탑 설치 UI 저장 변수[lyh]
+    public GameObject PlantUI;
+
+    // 터치한 타일 정보 저장 변수[lyh]
+    Tile tile;
     private void Awake()
     {
         if (cam == null) cam = Camera.main;
@@ -78,7 +83,7 @@ public class TurretInstaller : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, 100f, tileLayerMask)) return;
 
         // hit한 collider가 Tile인지 확인합니다.
-        Tile tile = hit.collider.GetComponent<Tile>();
+        tile = hit.collider.GetComponent<Tile>();
         if (tile == null) return;
 
         // Tile이여도 이미 포탑이 설치된 tile이면 무시합니다.
@@ -88,8 +93,8 @@ public class TurretInstaller : MonoBehaviour
             return;
         }
 
-        if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
-        InstallTurret(tile);
+        // 포탑 설치 UI 열기[lyh]
+        PlantUI.SetActive(true);
     }
 
     private int MeasureTurretCost()
@@ -110,8 +115,12 @@ public class TurretInstaller : MonoBehaviour
         }
     }
 
-    private void InstallTurret(Tile tile)
+    public void InstallTurret()
     {
+        
+        // ── 골드 차감 ───────────────────────────────────────[lyh]
+        if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
+
         // ── 포탑 월드 크기 계산 ──────────────────────────────
         float turretSize = TILE_SIZE * turretScaleValue;
 
