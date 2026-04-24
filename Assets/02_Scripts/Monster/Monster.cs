@@ -67,7 +67,13 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
-    public abstract void Init();
+    public virtual void Init() {}
+
+    protected virtual void Awake()
+    {
+        Init();
+        Debug.Log($"{name} : hp - {hp}, attackDamage - {attackDamage}, attackSpeed - {attackSpeed}");
+    }
 
     // 실시간 몬스터 체력 관리 
     /*

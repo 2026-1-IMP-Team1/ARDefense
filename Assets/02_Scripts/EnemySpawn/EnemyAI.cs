@@ -72,6 +72,6 @@ public class EnemyAI : MonoBehaviour
     void Attack()
     {
         // 여기에 공격 애니메이션이나 데미지 로직 추가하면 됩니다
-        Debug.Log($"{target.name} 공격 중!");
+        // Debug.Log($"{target.name} 공격 중!");
     }
 }

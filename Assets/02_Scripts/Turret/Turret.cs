@@ -94,6 +94,8 @@ public class Turret : MonoBehaviour
         attackDamage = TURRET_ATTACK_DAMAGE;
         attackRange = TURRET_ATTACK_RANGE;
         attackSpeed = TURRET_ATTACK_SPEED;
+
+        Debug.Log($"{name}: hp - {hp}, damage - {attackDamage}, range - {attackRange}, speed - {attackSpeed}");
     }
 
     private void FindMonster()
@@ -134,5 +136,7 @@ public class Turret : MonoBehaviour
 
         Monster monster = target.GetComponent<Monster>();
         monster.TakeDamage(attackDamage);
+
+        Debug.Log($"{name} - damage : {attackDamage}, remaining HP: {monster.HP}");
     }
 }

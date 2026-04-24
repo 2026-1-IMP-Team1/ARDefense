@@ -14,14 +14,14 @@ public static class MonsterStats
 
     [Header("Monster HP")]
     // 웨이브당 추가 체력과 공격력을 넣어봤습니다. 가중치 조정은 대강 1/4를 추가해놨습니다.
-    public static readonly float NORMAL_MONSTER_HP = 10.0f * (GameManager.Instance.phase * 1.25f);
-    public static readonly float ELITE_MONSTER_HP = 50.0f * (GameManager.Instance.phase * 1.25f);
-    public static readonly float BOSS_MONSTER_HP = 200.0f * (GameManager.Instance.phase * 1.25f);
+    public static float NORMAL_MONSTER_HP => 10.0f * (GameManager.Instance.phase * 1.25f);
+    public static float ELITE_MONSTER_HP => 50.0f * (GameManager.Instance.phase * 1.25f);
+    public static float BOSS_MONSTER_HP => 200.0f * (GameManager.Instance.phase * 1.25f);
 
     [Header("Monster Attack Damage")]
-    public static readonly float NORMAL_MONSTER_ATTACK_DAMAGE = 5.0f * (GameManager.Instance.phase * 1.25f);
-    public static readonly float ELITE_MONSTER_ATTACK_DAMAGE = 15.0f * (GameManager.Instance.phase * 1.25f);
-    public static readonly float BOSS_MONSTER_ATTACK_DAMAGE = 30.0f * (GameManager.Instance.phase * 1.25f);
+    public static float NORMAL_MONSTER_ATTACK_DAMAGE => 5.0f * (GameManager.Instance.phase * 1.25f);
+    public static float ELITE_MONSTER_ATTACK_DAMAGE => 15.0f * (GameManager.Instance.phase * 1.25f);
+    public static float BOSS_MONSTER_ATTACK_DAMAGE => 30.0f * (GameManager.Instance.phase * 1.25f);
 
     // 몬스터 웨이브마다 몇마리씩 나오는지 대강 정의
     [Header("Monster Number")]

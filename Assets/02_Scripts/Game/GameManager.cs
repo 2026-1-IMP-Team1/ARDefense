@@ -95,6 +95,8 @@ public class GameManager : MonoBehaviour
 
         // 게임을 완전히 처음 시작할 때는 일단 MIDDLE_AGE 상태로 시작합니다.
         currentAge = GameAge.MIDDLE_AGE;
+
+        phase = 1;
     }
 
     void OnEnable()

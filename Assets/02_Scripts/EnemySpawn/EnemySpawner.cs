@@ -38,7 +38,7 @@ public class EnemySpawner : MonoBehaviour
             {
                 if (GameManager.Instance.CurrentState == GameFlowState.BEFORE_GATE_OPEN)
                 {
-                    Debug.Log("BEFORE_GATE_OPEN");
+                    // Debug.Log("BEFORE_GATE_OPEN");
                     hasStartedWave = false;
                     return;
                 }
