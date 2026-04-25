@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
         set
         {
             wave = value;
+            if (wave == 0) return; // 0일 때 0 % 3 == 0으로 보스 페이즈가 되는 것을 방지
+
             // 3 웨이브 당 1 페이즈로 만들었습니다.
             // 3의 나머지를 이용하여서 만들었습니다.[kwj]
             if (wave % 3 == 1)
@@ -39,7 +41,41 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    public int phase;
+    
+    // phase 변수를 수동으로 올리지 않고, wave 값에 따라 자동 계산되도록 프로퍼티화 (싱크 꼬임 완벽 해결)
+    public int Phase
+    {
+        get
+        {
+            return (wave == 0) ? 1 : ((wave - 1) / 3) + 1;
+        }
+    }
+
+    // 몬스터 마릿수 추적 및 클리어 대기 상태 변수
+    public int aliveMonsterCount = 0;
+    public bool IsWaitingForClear = false;
+
+    public void AddMonster()
+    {
+        aliveMonsterCount++;
+    }
+
+    public void RemoveMonster()
+    {
+        aliveMonsterCount--;
+        // 방어적 코드: 마릿수가 음수가 되는 것 방지
+        if (aliveMonsterCount <= 0)
+        {
+            aliveMonsterCount = 0;
+            // 살아있는 몬스터가 없고, 보스 클리어 대기 상태일 때 정비 상태로 전환
+            if (IsWaitingForClear)
+            {
+                // 다음 페이즈 몬스터 스폰이 멈출 수 있기 때문에
+                IsWaitingForClear = false; 
+                CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+            }
+        }
+    }
     
     // 외부 스크립트에서 currentState를 참조하고 싶을 때는, 프로퍼티인 CurrentState를 참조하시면 됩니다.
     // 예시: EnemySpawner에서 일반 몬스터의 수가 0이 되었을 경우에
@@ -96,7 +132,6 @@ public class GameManager : MonoBehaviour
         // 게임을 완전히 처음 시작할 때는 일단 MIDDLE_AGE 상태로 시작합니다.
         currentAge = GameAge.MIDDLE_AGE;
 
-        phase = 1;
     }
 
     void OnEnable()

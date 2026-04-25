@@ -17,6 +17,9 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
+        // 보스 스폰 후 남은 몬스터들이 전멸할 때까지 스폰 로직 대기
+        if (GameManager.Instance.IsWaitingForClear) return;
+
         // 현재 게임 단계에 맞춰서 한번에 나오는 몬스터 수를 결정하는 로직입니다.
         // StartWave함수에서 사용
         if(GameManager.Instance.CurrentState == GameFlowState.NORMAL_MONSTER_SPAWN)
@@ -74,7 +77,8 @@ public class EnemySpawner : MonoBehaviour
 
         yield return new WaitForSeconds(waitTimeAfterBoard);
 
-        for (int i = 0; i < 5; i++)
+        // amountPerTime에 따라 몬스터를 소환하게 만들었습니다(원래는 5로 되있어서 수정)(kwj)
+        for (int i = 0; i < amountPerTime; i++)
         {
             // 게이트 문 앞으로 0.1m 지점에서 생성
             Vector3 monsterPos = spawnedGate.transform.position + (spawnedGate.transform.forward * 0.1f) + new Vector3(0, 0.1f, 0);
@@ -85,10 +89,10 @@ public class EnemySpawner : MonoBehaviour
             yield return new WaitForSeconds(2.0f);
         }
 
-        // 3번째 보스 페이즈(마지막 페이즈)가 끝났다면 다음 웨이브로 즉시 넘어가지 않고 정비 상태로 변경[kwj]
         if (GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)
         {
-            GameManager.Instance.CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+            // 보스 스폰 직후 wave 증가 및 클리어 대기 상태 돌입
+            GameManager.Instance.IsWaitingForClear = true;
         }
         else
         {
