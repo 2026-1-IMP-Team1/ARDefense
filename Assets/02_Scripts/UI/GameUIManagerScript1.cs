@@ -27,6 +27,7 @@ public class GameUIManager : MonoBehaviour
     public Button readyButton;
 
     [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private GameObject gameClearUI;
 
     // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
     void Start()
@@ -40,6 +41,7 @@ public class GameUIManager : MonoBehaviour
         GoldManager.Instance.OnGoldChanged += GoldNumManager;
         GameManager.Instance.IsGameStateBeforeGateOpen += ShowPhaseReadyUI;
         GameManager.Instance.OnGameOver += ShowGameOverUI;
+        GameManager.Instance.OnGameClear += ShowGameClearUI;
     }
 
     void OnEnable()
@@ -52,6 +54,7 @@ public class GameUIManager : MonoBehaviour
         GoldManager.Instance.OnGoldChanged -= GoldNumManager;
         GameManager.Instance.IsGameStateBeforeGateOpen -= ShowPhaseReadyUI;
         GameManager.Instance.OnGameOver -= ShowGameOverUI;
+        GameManager.Instance.OnGameClear -= ShowGameClearUI;
         readyButton.onClick.RemoveListener(OnReadyButtonClicked);
     }
 
@@ -129,6 +132,12 @@ public class GameUIManager : MonoBehaviour
     private void ShowGameOverUI()
     {
         gameOverUI?.SetActive(true);
+    }
+
+    private void ShowGameClearUI()
+    {
+        phaseReadyUI?.SetActive(false);
+        gameClearUI?.SetActive(true);
     }
 
     private void OnReadyButtonClicked()

@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     [Tooltip("Event")]
     public event Action IsGameStateBeforeGateOpen;
     public event Action OnGameOver;
+    public event Action OnGameClear;
+
+    private const int MAX_WAVE = 9; // Phase 3 보스 = 마지막 웨이브
 
     private GameFlowState currentState;
     private GameAge currentAge;
@@ -73,9 +76,11 @@ public class GameManager : MonoBehaviour
             // 살아있는 몬스터가 없고, 보스 클리어 대기 상태일 때 정비 상태로 전환
             if (IsWaitingForClear)
             {
-                // 다음 페이즈 몬스터 스폰이 멈출 수 있기 때문에
-                IsWaitingForClear = false; 
-                CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+                IsWaitingForClear = false;
+                // 최종 보스(wave 9) 처치 시 게임 클리어, 그 외 보스는 다음 페이즈 준비
+                CurrentState = (wave >= MAX_WAVE)
+                    ? GameFlowState.GAME_CLEAR
+                    : GameFlowState.BEFORE_GATE_OPEN;
             }
         }
     }
@@ -104,6 +109,11 @@ public class GameManager : MonoBehaviour
             if (currentState == GameFlowState.GAME_OVER)
             {
                 OnGameOver?.Invoke();
+            }
+
+            if (currentState == GameFlowState.GAME_CLEAR)
+            {
+                OnGameClear?.Invoke();
             }
 
             Debug.Log($"{currentState}, {wave}");

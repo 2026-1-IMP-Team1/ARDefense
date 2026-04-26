@@ -19,6 +19,8 @@ public class EnemySpawnerClone : MonoBehaviour
 
     void Update()
     {
+        var state = GameManager.Instance.CurrentState;
+        if (state == GameFlowState.GAME_OVER || state == GameFlowState.GAME_CLEAR) return;
         if (GameManager.Instance.IsWaitingForClear) return;
 
         if (GameManager.Instance.CurrentState == GameFlowState.NORMAL_MONSTER_SPAWN)
@@ -41,6 +43,11 @@ public class EnemySpawnerClone : MonoBehaviour
                 if (GameManager.Instance.CurrentState == GameFlowState.BEFORE_GATE_OPEN)
                 {
                     hasStartedWave = false;
+                    return;
+                }
+
+                if (GameManager.Instance.CurrentState == GameFlowState.GAME_START)
+                {
                     return;
                 }
 

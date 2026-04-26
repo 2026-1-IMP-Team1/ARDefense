@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 using static Tile;
@@ -38,7 +40,19 @@ public class TurretInstaller : MonoBehaviour
         if (!gameBoardGenerator.IsGameBoardGenerated) return;
 
         if (!TryGetTouchBeganPosition(out Vector2 screenPos)) return;
+
+        // PlantUI 버튼 등 UI 위의 터치는 무시
+        if (IsPointerOverUI(screenPos)) return;
+
         HandleTileTouch(screenPos);
+    }
+
+    private bool IsPointerOverUI(Vector2 screenPos)
+    {
+        var eventData = new PointerEventData(EventSystem.current) { position = screenPos };
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        return results.Count > 0;
     }
 
     private void OnEnable()
@@ -80,20 +94,28 @@ public class TurretInstaller : MonoBehaviour
     {
         Ray ray = cam.ScreenPointToRay(screenPos);
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 100f, tileLayerMask)) return;
+        if (!Physics.Raycast(ray, out RaycastHit hit, 100f, tileLayerMask))
+        {
+            PlantUI.SetActive(false);
+            return;
+        }
 
         // hit한 collider가 Tile인지 확인합니다.
         tile = hit.collider.GetComponent<Tile>();
-        if (tile == null) return;
+        if (tile == null)
+        {
+            PlantUI.SetActive(false);
+            return;
+        }
 
-        // Tile이여도 이미 포탑이 설치된 tile이면 무시합니다.
+        // 이미 포탑이 설치된 타일이면 UI를 닫습니다.
         if (tile.IsTurretInstalled)
         {
+            PlantUI.SetActive(false);
             Debug.Log($"[TurretInstaller] Tile ({tile.x}, {tile.y})에는 이미 포탑이 설치되어 있습니다.");
             return;
         }
 
-        // 포탑 설치 UI 열기[lyh]
         PlantUI.SetActive(true);
     }
 

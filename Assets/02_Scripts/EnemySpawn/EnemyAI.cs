@@ -6,7 +6,7 @@ public class EnemyAI : MonoBehaviour
     public float attackRange = 0.2f; //사거리
     private Transform target;
     private Monster monster;
-    private float attackCooldown = 0f;
+    private float attackCooldown = 1f;
 
     void Awake()
     {
@@ -15,7 +15,11 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.Instance != null && GameManager.Instance.CurrentState == GameFlowState.GAME_OVER) return;
+        if (GameManager.Instance != null)
+        {
+            var s = GameManager.Instance.CurrentState;
+            if (s == GameFlowState.GAME_OVER || s == GameFlowState.GAME_CLEAR) return;
+        }
 
         FindTarget(); //타겟 찾기 (플레이어나 터렛)
 
