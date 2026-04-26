@@ -2220,7 +2220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 810274b8504f99a40a16468e3bdfaf27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  wave: 1
+  wave: 0
   aliveMonsterCount: 0
   IsWaitingForClear: 0
 --- !u!4 &936205481
@@ -4707,8 +4707,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 503491d237e6f5644a3088337bb7aeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameBoardGenerator
-  columns: 8
-  rows: 8
+  columns: 5
+  rows: 5
   tilePrefab: {fileID: 2577558067217510085, guid: 38e4256a65879834c9a4fd05c3e09151, type: 3}
   alignBoardToCamera: 1
   planeManager: {fileID: 1629617128}

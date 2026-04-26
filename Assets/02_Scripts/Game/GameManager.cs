@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
             else if (wave % 3 == 0) {
                 CurrentState = GameFlowState.BOSS_MONSTER_SPAWN;
             }
+
+            Debug.Log($"{currentState}, {wave}");
         }
     }
     
@@ -97,6 +99,8 @@ public class GameManager : MonoBehaviour
             {
                 IsGameStateBeforeGateOpen?.Invoke();
             }
+
+            Debug.Log($"{currentState}, {wave}");
         }
     }
 
@@ -127,11 +131,10 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         
         // 게임을 완전히 처음 시작할 때는 일단 GAME_START 상태로 시작합니다.
-        currentState = GameFlowState.GAME_START;
+        CurrentState = GameFlowState.GAME_START;
 
         // 게임을 완전히 처음 시작할 때는 일단 MIDDLE_AGE 상태로 시작합니다.
         currentAge = GameAge.MIDDLE_AGE;
-
     }
 
     void OnEnable()

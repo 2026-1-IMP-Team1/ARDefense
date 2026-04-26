@@ -124,9 +124,8 @@ public class GameUIManager : MonoBehaviour
 
     private void OnReadyButtonClicked()
     {
-        Debug.Log("NORMAL_MONSTER_SPAWN");
+        // Debug.Log("NORMAL_MONSTER_SPAWN");
         GameManager.Instance.Wave++; // wave = 1이 되므로, CurrentState = NORMAL_MONSTER_SPAWN;
-
         phaseReadyUI.SetActive(false);
     }
 }
