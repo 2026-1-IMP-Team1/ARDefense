@@ -2221,7 +2221,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   wave: 1
-  phase: 0
+  aliveMonsterCount: 0
+  IsWaitingForClear: 0
 --- !u!4 &936205481
 Transform:
   m_ObjectHideFlags: 0
@@ -4706,13 +4707,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 503491d237e6f5644a3088337bb7aeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameBoardGenerator
-  columns: 5
-  rows: 5
+  columns: 8
+  rows: 8
   tilePrefab: {fileID: 2577558067217510085, guid: 38e4256a65879834c9a4fd05c3e09151, type: 3}
   alignBoardToCamera: 1
   planeManager: {fileID: 1629617128}
   arSession: {fileID: 1368582803}
-  chaosGate: {fileID: 1778333942}
+  chaosGate: {fileID: 3170598573984341495, guid: 41713e35ede29ef47af2eaeb60d82285, type: 3}
   gameBoardSetUI: {fileID: 1702050343}
   window: {fileID: 1477796165}
   yesButton: {fileID: 1237026805}
@@ -4974,11 +4975,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1758069714}
   m_CullTransparentMesh: 1
---- !u!1 &1778333942 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 653502354140818124, guid: 94067717c6090334b9d7e026eed55093, type: 3}
-  m_PrefabInstance: {fileID: 1181495848}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1781911225
 GameObject:
   m_ObjectHideFlags: 0
