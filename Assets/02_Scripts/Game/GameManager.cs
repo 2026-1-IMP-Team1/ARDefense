@@ -69,20 +69,22 @@ public class GameManager : MonoBehaviour
     public void RemoveMonster()
     {
         aliveMonsterCount--;
-        // 방어적 코드: 마릿수가 음수가 되는 것 방지
         if (aliveMonsterCount <= 0)
         {
             aliveMonsterCount = 0;
-            // 살아있는 몬스터가 없고, 보스 클리어 대기 상태일 때 정비 상태로 전환
-            if (IsWaitingForClear)
-            {
-                IsWaitingForClear = false;
-                // 최종 보스(wave 9) 처치 시 게임 클리어, 그 외 보스는 다음 페이즈 준비
-                CurrentState = (wave >= MAX_WAVE)
-                    ? GameFlowState.GAME_CLEAR
-                    : GameFlowState.BEFORE_GATE_OPEN;
-            }
+            TryAdvanceAfterBoss();
         }
+    }
+
+    // IsWaitingForClear 상태이고 살아있는 몬스터가 없을 때 다음 페이즈로 전환.
+    // RemoveMonster와 스포너 양쪽에서 호출해 타이밍 경쟁 조건을 방지한다.
+    public void TryAdvanceAfterBoss()
+    {
+        if (!IsWaitingForClear || aliveMonsterCount > 0) return;
+        IsWaitingForClear = false;
+        CurrentState = (wave >= MAX_WAVE)
+            ? GameFlowState.GAME_CLEAR
+            : GameFlowState.BEFORE_GATE_OPEN;
     }
     
     // 외부 스크립트에서 currentState를 참조하고 싶을 때는, 프로퍼티인 CurrentState를 참조하시면 됩니다.

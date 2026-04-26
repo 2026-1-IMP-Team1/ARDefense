@@ -103,6 +103,8 @@ public class EnemySpawnerClone : MonoBehaviour
         if (GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)
         {
             GameManager.Instance.IsWaitingForClear = true;
+            // 보스가 2초 대기 중에 이미 처치된 경우를 대비해 즉시 체크
+            GameManager.Instance.TryAdvanceAfterBoss();
         }
         else
         {
