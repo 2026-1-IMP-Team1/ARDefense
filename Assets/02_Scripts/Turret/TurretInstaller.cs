@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using TMPro;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 using static Tile;
@@ -27,8 +28,17 @@ public class TurretInstaller : MonoBehaviour
     //포탑 설치 UI 저장 변수[lyh]
     public GameObject PlantUI;
 
+    [Header("포탑 선택 UI")]
+    [SerializeField] private GameObject turretSelectUI;
+    [SerializeField] private TextMeshProUGUI hpText;
+    [SerializeField] private TextMeshProUGUI damageText;
+    [SerializeField] private TextMeshProUGUI upgradeCountText;
+
     // 터치한 타일 정보 저장 변수[lyh]
     Tile tile;
+
+    private Turret selectedTurret;
+    private Tile selectedTile;
     private void Awake()
     {
         if (cam == null) cam = Camera.main;
@@ -94,29 +104,73 @@ public class TurretInstaller : MonoBehaviour
     {
         Ray ray = cam.ScreenPointToRay(screenPos);
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 100f, tileLayerMask))
+        // 레이어 마스크 없이 캐스트 → Turret·Tile 모두 감지
+        if (!Physics.Raycast(ray, out RaycastHit hit, 100f))
         {
-            PlantUI.SetActive(false);
+            CloseBothUI();
             return;
         }
 
-        // hit한 collider가 Tile인지 확인합니다.
+        // ① hit한 오브젝트(또는 부모)에 Turret이 있으면 → 포탑 선택 UI
+        Turret hitTurret = hit.collider.GetComponentInParent<Turret>();
+        if (hitTurret != null)
+        {
+            selectedTurret = hitTurret;
+            selectedTile   = FindTileForTurret(hitTurret);
+            RefreshTurretInfoUI(hitTurret);
+            PlantUI.SetActive(false);
+            turretSelectUI.SetActive(true);
+            return;
+        }
+
+        // ② Tile이면 → 설치 UI (빈 타일) 또는 fallback 포탑 선택
         tile = hit.collider.GetComponent<Tile>();
         if (tile == null)
         {
-            PlantUI.SetActive(false);
+            CloseBothUI();
             return;
         }
 
-        // 이미 포탑이 설치된 타일이면 UI를 닫습니다.
         if (tile.IsTurretInstalled)
         {
+            selectedTile   = tile;
+            selectedTurret = tile.InstalledTurret != null
+                ? tile.InstalledTurret.GetComponent<Turret>()
+                : null;
+            if (selectedTurret != null) RefreshTurretInfoUI(selectedTurret);
             PlantUI.SetActive(false);
-            Debug.Log($"[TurretInstaller] Tile ({tile.x}, {tile.y})에는 이미 포탑이 설치되어 있습니다.");
+            turretSelectUI.SetActive(selectedTurret != null);
             return;
         }
 
+        turretSelectUI.SetActive(false);
         PlantUI.SetActive(true);
+    }
+
+    // Tile의 InstalledTurret을 순회해서 해당 포탑이 설치된 타일을 찾는다
+    private Tile FindTileForTurret(Turret turret)
+    {
+        if (gameBoardGenerator.GameBoard == null) return null;
+        foreach (Transform child in gameBoardGenerator.GameBoard.transform)
+        {
+            Tile t = child.GetComponent<Tile>();
+            if (t != null && t.InstalledTurret == turret.gameObject)
+                return t;
+        }
+        return null;
+    }
+
+    private void RefreshTurretInfoUI(Turret turret)
+    {
+        if (hpText          != null) hpText.text           = $"HP : {turret.HP:F0} / {turret.MaxHP:F0}";
+        if (damageText      != null) damageText.text       = $"Damage : {turret.AttackDamage:F0}";
+        if (upgradeCountText != null) upgradeCountText.text = $"Upgrade : {turret.UpgradeCount}";
+    }
+
+    private void CloseBothUI()
+    {
+        PlantUI.SetActive(false);
+        turretSelectUI.SetActive(false);
     }
 
     private int MeasureTurretCost()
@@ -135,6 +189,31 @@ public class TurretInstaller : MonoBehaviour
             default :
                 return -1;
         }
+    }
+
+    public void UpgradeTurret()
+    {
+        if (selectedTurret == null) return;
+        if (!GoldManager.Instance.SpendGold(TURRET_UPGRADE_COST)) return;
+
+        selectedTurret.Upgrade();
+        RefreshTurretInfoUI(selectedTurret);
+    }
+
+    public void DestroyTurret()
+    {
+        if (selectedTurret == null) return;
+
+        if (selectedTile != null)
+        {
+            selectedTile.IsTurretInstalled = false;
+            selectedTile.InstalledTurret   = null;
+        }
+
+        Destroy(selectedTurret.gameObject);
+        selectedTurret = null;
+        selectedTile   = null;
+        turretSelectUI.SetActive(false);
     }
 
     public void InstallTurret()

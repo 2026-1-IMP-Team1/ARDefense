@@ -28,6 +28,7 @@ public class GameUIManager : MonoBehaviour
 
     [SerializeField] private GameObject gameOverUI;
     [SerializeField] private GameObject gameClearUI;
+    [SerializeField] private GameObject TurretSelectUI;
 
     // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
     void Start()

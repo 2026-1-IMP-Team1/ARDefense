@@ -77,7 +77,7 @@ public class EnemySpawnerClone : MonoBehaviour
         // 게이트가 프리팹에 포함되어 있으므로 스포너 오브젝트 자체를 해당 위치로 이동
         transform.SetPositionAndRotation(spawnPos, spawnRot);*/
 
-        yield return new WaitForSeconds(waitTimeAfterBoard);
+        // yield return new WaitForSeconds(waitTimeAfterBoard);
 
         GameObject monsterPrefab = GameManager.Instance.CurrentState switch
         {
