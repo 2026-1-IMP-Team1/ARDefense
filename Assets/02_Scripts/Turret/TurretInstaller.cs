@@ -17,7 +17,9 @@ public class TurretInstaller : MonoBehaviour
     [SerializeField] private Camera cam;
 
     [Header("Turret Prefab")]
-    [SerializeField] private GameObject turretPrefab;
+    [SerializeField] private GameObject middleAgeTurretPrefab;
+    [SerializeField] private GameObject modernAgeTurretPrefab;
+    [SerializeField] private GameObject futureAgeTurretPrefab;
 
     [Header("포탑 스케일 배율 (1이면 tileSize와 동일한 크기로 설정)")]
     [SerializeField, Range(0.5f, 1f)] private float turretScaleValue = 0.9f;
@@ -173,6 +175,17 @@ public class TurretInstaller : MonoBehaviour
         turretSelectUI.SetActive(false);
     }
 
+    private GameObject GetTurretPrefabForCurrentAge()
+    {
+        return GameManager.Instance.CurrentAge switch
+        {
+            GameAge.MIDDLE_AGE => middleAgeTurretPrefab,
+            GameAge.MODERN_AGE => modernAgeTurretPrefab,
+            GameAge.FUTURE_AGE => futureAgeTurretPrefab,
+            _                  => middleAgeTurretPrefab
+        };
+    }
+
     private int MeasureTurretCost()
     {
         switch (GameManager.Instance.CurrentAge)
@@ -240,6 +253,12 @@ public class TurretInstaller : MonoBehaviour
             : Quaternion.identity;
 
         // ── 포탑 생성 ────────────────────────────────────────
+        GameObject turretPrefab = GetTurretPrefabForCurrentAge();
+        if (turretPrefab == null)
+        {
+            Debug.LogWarning($"[TurretInstaller] {GameManager.Instance.CurrentAge} 프리팹이 설정되지 않았습니다.");
+            return;
+        }
         GameObject turret = Instantiate(turretPrefab, spawnPos, boardRotation);
         turret.transform.localScale = Vector3.one * turretSize;
 

@@ -6,7 +6,7 @@ public class EnemyAI : MonoBehaviour
     public float attackRange = 0.2f; //사거리
     private Transform target;
     private Monster monster;
-    private float attackCooldown = 1f;
+    private float attackCooldown = 2f;
 
     void Awake()
     {

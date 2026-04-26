@@ -552,7 +552,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &182183551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6042,8 +6042,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 503491d237e6f5644a3088337bb7aeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameBoardGenerator
-  columns: 5
-  rows: 5
+  columns: 8
+  rows: 8
   tilePrefab: {fileID: 2577558067217510085, guid: 38e4256a65879834c9a4fd05c3e09151, type: 3}
   alignBoardToCamera: 1
   planeManager: {fileID: 1629617128}
@@ -6069,7 +6069,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TurretInstaller
   gameBoardGenerator: {fileID: 1629617133}
   cam: {fileID: 87502748}
-  turretPrefab: {fileID: 3447111282844702401, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+  middleAgeTurretPrefab: {fileID: 3447111282844702401, guid: 90b75e08941b86d4ea44ee53ecd8f57a, type: 3}
+  modernAgeTurretPrefab: {fileID: 3447111282844702401, guid: a862102559783ef49bd847b89be3e704, type: 3}
+  futureAgeTurretPrefab: {fileID: 3447111282844702401, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
   turretScaleValue: 0.9
   tileLayerMask:
     serializedVersion: 2

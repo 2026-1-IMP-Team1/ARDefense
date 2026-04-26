@@ -82,9 +82,21 @@ public class GameManager : MonoBehaviour
     {
         if (!IsWaitingForClear || aliveMonsterCount > 0) return;
         IsWaitingForClear = false;
-        CurrentState = (wave >= MAX_WAVE)
-            ? GameFlowState.GAME_CLEAR
-            : GameFlowState.BEFORE_GATE_OPEN;
+
+        if (wave >= MAX_WAVE)
+        {
+            CurrentState = GameFlowState.GAME_CLEAR;
+            return;
+        }
+
+        // 현재 Phase 완료 → 다음 시대로 전환 후 준비 단계로
+        switch (Phase)
+        {
+            case 1: CurrentAge = GameAge.MODERN_AGE; break;
+            case 2: CurrentAge = GameAge.FUTURE_AGE;  break;
+        }
+
+        CurrentState = GameFlowState.BEFORE_GATE_OPEN;
     }
     
     // 외부 스크립트에서 currentState를 참조하고 싶을 때는, 프로퍼티인 CurrentState를 참조하시면 됩니다.
@@ -132,6 +144,7 @@ public class GameManager : MonoBehaviour
         set
         {
             currentAge = value;
+            Debug.Log($"{CurrentAge}");
         }
     }
 
@@ -152,7 +165,7 @@ public class GameManager : MonoBehaviour
         CurrentState = GameFlowState.GAME_START;
 
         // 게임을 완전히 처음 시작할 때는 일단 MIDDLE_AGE 상태로 시작합니다.
-        currentAge = GameAge.MIDDLE_AGE;
+        CurrentAge = GameAge.MIDDLE_AGE;
     }
 
     void OnEnable()

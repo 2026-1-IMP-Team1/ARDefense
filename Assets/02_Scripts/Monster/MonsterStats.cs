@@ -16,7 +16,7 @@ public static class MonsterStats
     // 웨이브당 추가 체력과 공격력을 넣어봤습니다. 가중치 조정은 대강 1/4를 추가해놨습니다.
     public static float NORMAL_MONSTER_HP => 10.0f * (GameManager.Instance.Phase * 1.25f);
     public static float ELITE_MONSTER_HP => 50.0f * (GameManager.Instance.Phase * 1.25f);
-    public static float BOSS_MONSTER_HP => 200.0f * (GameManager.Instance.Phase * 1.25f);
+    public static float BOSS_MONSTER_HP => 100.0f * (GameManager.Instance.Phase * 1.25f);
 
     [Header("Monster Attack Damage")]
     public static float NORMAL_MONSTER_ATTACK_DAMAGE => 5.0f * (GameManager.Instance.Phase * 1.25f);

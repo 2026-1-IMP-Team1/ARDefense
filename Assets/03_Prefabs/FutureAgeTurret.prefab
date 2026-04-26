@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4284513507079301860}
   - component: {fileID: 2680711058054491169}
   - component: {fileID: 1053251201003972958}
-  - component: {fileID: 6745493319857895502}
+  - component: {fileID: 8578812686315448016}
   m_Layer: 0
   m_Name: FutureAgeTurret
   m_TagString: Turret
@@ -113,7 +113,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6745493319857895502
+--- !u!114 &8578812686315448016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,6 +122,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3447111282844702401}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d74b2a60e4925fe4295ea8d6c22c9a5d, type: 3}
+  m_Script: {fileID: 11500000, guid: 75e660014f9f73642a3352c52f50376a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Turret
+  m_EditorClassIdentifier: Assembly-CSharp::FutureAgeTurret

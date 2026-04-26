@@ -92,13 +92,7 @@ public class Turret : MonoBehaviour
 
     protected virtual void Init()
     {
-        hp = TURRET_HP;
-        maxHp = hp;
-        attackDamage = TURRET_ATTACK_DAMAGE;
         attackRange = TURRET_ATTACK_RANGE;
-        attackSpeed = TURRET_ATTACK_SPEED;
-
-        Debug.Log($"{name}: hp - {hp}, damage - {attackDamage}, range - {attackRange}, speed - {attackSpeed}");
     }
 
     public void Upgrade()
@@ -150,7 +144,7 @@ public class Turret : MonoBehaviour
         Monster monster = target.GetComponent<Monster>();
         monster.TakeDamage(attackDamage);
 
-        Debug.Log($"{name} - damage : {attackDamage}, remaining HP: {monster.HP}");
+        Debug.Log($"{name} attack - damage : {attackDamage}, remaining HP: {monster.HP}");
     }
 
     public void TakeDamage(float damage)
