@@ -5,9 +5,18 @@ public class EnemyAI : MonoBehaviour
     public float speed = 1.0f;
     public float attackRange = 0.2f; //사거리
     private Transform target;
+    private Monster monster;
+    private float attackCooldown = 0f;
+
+    void Awake()
+    {
+        monster = GetComponent<Monster>();
+    }
 
     void Update()
     {
+        if (GameManager.Instance != null && GameManager.Instance.CurrentState == GameFlowState.GAME_OVER) return;
+
         FindTarget(); //타겟 찾기 (플레이어나 터렛)
 
         if (target == null) //타겟 없으면 앞으로 직진
@@ -18,9 +27,12 @@ public class EnemyAI : MonoBehaviour
 
         MoveToTarget();
 
-        if (Vector3.Distance(transform.position, target.position) <= attackRange) //사거리 안쪽이면 공격
+        attackCooldown -= Time.deltaTime;
+        if (Vector3.Distance(transform.position, target.position) <= attackRange && attackCooldown <= 0f) //사거리 안쪽이면 공격
         {
             Attack();
+            int spd = (monster != null && monster.AttackSpeed > 0) ? monster.AttackSpeed : 1;
+            attackCooldown = 1f / spd;
         }
     }
 
@@ -71,7 +83,20 @@ public class EnemyAI : MonoBehaviour
 
     void Attack()
     {
-        // 여기에 공격 애니메이션이나 데미지 로직 추가하면 됩니다
-        // Debug.Log($"{target.name} 공격 중!");
+        if (target == null) return;
+        float damage = monster != null ? monster.AttackDamage : 1f;
+
+        Player player = target.GetComponent<Player>();
+        if (player != null)
+        {
+            player.TakeDamage(damage);
+            return;
+        }
+
+        Turret turret = target.GetComponent<Turret>();
+        if (turret != null)
+        {
+            turret.TakeDamage(damage);
+        }
     }
 }

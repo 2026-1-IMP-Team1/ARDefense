@@ -26,6 +26,8 @@ public class GameUIManager : MonoBehaviour
     public GameObject phaseReadyUI;
     public Button readyButton;
 
+    [SerializeField] private GameObject gameOverUI;
+
     // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
     void Start()
     {
@@ -37,6 +39,7 @@ public class GameUIManager : MonoBehaviour
         // 자꾸 Awake랑 Enable이랑 GoldManager 싱글톤 시점이 어중간해서 Start에서 구독하게 했습니다.
         GoldManager.Instance.OnGoldChanged += GoldNumManager;
         GameManager.Instance.IsGameStateBeforeGateOpen += ShowPhaseReadyUI;
+        GameManager.Instance.OnGameOver += ShowGameOverUI;
     }
 
     void OnEnable()
@@ -48,6 +51,7 @@ public class GameUIManager : MonoBehaviour
     {
         GoldManager.Instance.OnGoldChanged -= GoldNumManager;
         GameManager.Instance.IsGameStateBeforeGateOpen -= ShowPhaseReadyUI;
+        GameManager.Instance.OnGameOver -= ShowGameOverUI;
         readyButton.onClick.RemoveListener(OnReadyButtonClicked);
     }
 
@@ -120,6 +124,11 @@ public class GameUIManager : MonoBehaviour
     private void ShowPhaseReadyUI()
     {
         phaseReadyUI.SetActive(true);
+    }
+
+    private void ShowGameOverUI()
+    {
+        gameOverUI?.SetActive(true);
     }
 
     private void OnReadyButtonClicked()

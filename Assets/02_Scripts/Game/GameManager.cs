@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Event")]
     public event Action IsGameStateBeforeGateOpen;
+    public event Action OnGameOver;
 
     private GameFlowState currentState;
     private GameAge currentAge;
@@ -98,6 +99,11 @@ public class GameManager : MonoBehaviour
             if (currentState == GameFlowState.BEFORE_GATE_OPEN)
             {
                 IsGameStateBeforeGateOpen?.Invoke();
+            }
+
+            if (currentState == GameFlowState.GAME_OVER)
+            {
+                OnGameOver?.Invoke();
             }
 
             Debug.Log($"{currentState}, {wave}");

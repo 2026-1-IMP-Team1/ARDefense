@@ -139,4 +139,15 @@ public class Turret : MonoBehaviour
 
         Debug.Log($"{name} - damage : {attackDamage}, remaining HP: {monster.HP}");
     }
+
+    public void TakeDamage(float damage)
+    {
+        Debug.Log($"{name} : attacked - remaining HP : {hp}");
+
+        hp -= damage;
+        if (hp <= 0f)
+        {
+            Destroy(gameObject);
+        }
+    }
 }

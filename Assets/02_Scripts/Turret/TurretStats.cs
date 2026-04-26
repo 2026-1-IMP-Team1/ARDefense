@@ -21,7 +21,7 @@ public class TurretStats
 
     // Phase에 따라 능력치 상향하는 디자인이면 그냥 TURRET_ATTACK_DAMAGE 하나로 해도 괜찮지 않을까요? (임시)
     // 물론 시대별 포탑 스탯들을 각각 지정해줘도 상관 없을듯 합니다.
-    public static float TURRET_ATTACK_DAMAGE => 50.0f * (GameManager.Instance.Phase * 1.25f);
+    public static float TURRET_ATTACK_DAMAGE => 5.0f * (GameManager.Instance.Phase * 1.25f);
 
     [Header("Turret Attack Speed")]
     // 포탑의 공격 속도 수치 자체에 대해서는 추가적인 고민이 필요할 거 같습니다.
