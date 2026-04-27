@@ -7,10 +7,12 @@ public class EnemyAI : MonoBehaviour
     private Transform target;
     private Monster monster;
     private float attackCooldown = 2f;
+    private AudioSource audioSource;
 
     void Awake()
     {
         monster = GetComponent<Monster>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -89,6 +91,11 @@ public class EnemyAI : MonoBehaviour
     {
         if (target == null) return;
         float damage = monster != null ? monster.AttackDamage : 1f;
+
+        if (audioSource != null)
+        {
+            audioSource.Play();
+        }
 
         Player player = target.GetComponent<Player>();
         if (player != null)
