@@ -6069,11 +6069,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TurretInstaller
   gameBoardGenerator: {fileID: 1629617133}
   cam: {fileID: 87502748}
-  middleAgeTurretPrefab: {fileID: 1424550477299632, guid: 776300a47e56c9940b775c4c51f09834, type: 3}
-  modernAgeTurretPrefab: {fileID: 8671637467687091871, guid: d49ae72636d0f834abf4469c2920ae90, type: 3}
+  middleAgeTurretPrefab: {fileID: 3595860349386605150, guid: b7d6e9d25cb5f5249a1fcba274bff15d, type: 3}
+  modernAgeTurretPrefab: {fileID: 3226583421603586234, guid: 6848fd49c45e87646acbe69cc8dcc01e, type: 3}
   futureAgeTurretPrefab: {fileID: 1000010153274142, guid: 2652172d138981b4abc806ea8ec36564, type: 3}
   middleAgeTurretScaleValue: 0.35
-  modernAgeTurretScaleValue: 0.9
+  modernAgeTurretScaleValue: 0.4
   futureAgeTurretScaleValue: 0.9
   tileLayerMask:
     serializedVersion: 2
