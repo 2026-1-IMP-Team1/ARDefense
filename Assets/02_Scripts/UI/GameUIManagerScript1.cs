@@ -109,6 +109,7 @@ public class GameUIManager : MonoBehaviour
     // 메인매뉴로 돌아가는 메서드
     public void GoToMainUI()
     {
+        GameManager.Instance.RestartGame();
         SceneManager.LoadScene("MainUI");
     }
 
