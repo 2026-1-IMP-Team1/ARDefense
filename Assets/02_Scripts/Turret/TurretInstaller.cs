@@ -22,7 +22,9 @@ public class TurretInstaller : MonoBehaviour
     [SerializeField] private GameObject futureAgeTurretPrefab;
 
     [Header("포탑 스케일 배율 (1이면 tileSize와 동일한 크기로 설정)")]
-    [SerializeField, Range(0.5f, 1f)] private float turretScaleValue = 0.9f;
+    [SerializeField, Range(0.1f, 2f)] private float middleAgeTurretScaleValue = 0.9f;
+    [SerializeField, Range(0.1f, 2f)] private float modernAgeTurretScaleValue  = 0.9f;
+    [SerializeField, Range(0.1f, 2f)] private float futureAgeTurretScaleValue  = 0.9f;
 
     [Header("타일 Layer Mask (특정 레이어만 터치 감지할 때 설정)")]
     [SerializeField] private LayerMask tileLayerMask = ~0;
@@ -186,6 +188,17 @@ public class TurretInstaller : MonoBehaviour
         };
     }
 
+    private float GetTurretScaleForCurrentAge()
+    {
+        return GameManager.Instance.CurrentAge switch
+        {
+            GameAge.MIDDLE_AGE => middleAgeTurretScaleValue,
+            GameAge.MODERN_AGE => modernAgeTurretScaleValue,
+            GameAge.FUTURE_AGE => futureAgeTurretScaleValue,
+            _                  => middleAgeTurretScaleValue
+        };
+    }
+
     private int MeasureTurretCost()
     {
         switch (GameManager.Instance.CurrentAge)
@@ -236,7 +249,7 @@ public class TurretInstaller : MonoBehaviour
         if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
 
         // ── 포탑 월드 크기 계산 ──────────────────────────────
-        float turretSize = TILE_SIZE * turretScaleValue;
+        float turretSize = TILE_SIZE * GetTurretScaleForCurrentAge();
 
         // ── 위치 계산 ────────────────────────────────────────
         // lossyScale: 부모 포함 실제 월드 스케일
