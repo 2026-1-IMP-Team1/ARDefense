@@ -180,7 +180,11 @@ public class GameManager : MonoBehaviour
         CurrentAge = GameAge.MIDDLE_AGE;
         CurrentState = GameFlowState.GAME_START;
 
-        // (만약 GoldManager 등 다른 싱글톤이 있다면 이곳에서 함께 변수 초기화가 필요합니다.)
+        // GoldManager의 골드 초기화 로직 추가
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.ResetGold();
+        }
 
         // 2. 현재 활성화된 씬을 다시 로드하여 맵, 포탑, 몬스터 등을 모두 삭제하고 처음 상태로 되돌림
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -198,8 +202,8 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬 로드가 완료된 후 상태가 GAME_START라면, 다음 페이즈로 넘어갑니다.
-        // (DontDestroyOnLoad로 살아남은 GameManager는 재시작 시 Start()가 다시 호출되지 않기 때문입니다)
+        // 씬 로드가 완료된 후 상태가 GAME_START라면, 다음 페이즈로 넘어가게 만들었습니다
+        // (DontDestroyOnLoad로 살아남은 GameManager는 재시작 시 Start()가 다시 호출되지 않아서)
         if (currentState == GameFlowState.GAME_START)
         {
             CurrentState = GameFlowState.BEFORE_GATE_OPEN;
