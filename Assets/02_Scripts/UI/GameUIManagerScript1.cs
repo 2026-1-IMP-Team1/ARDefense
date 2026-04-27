@@ -26,6 +26,10 @@ public class GameUIManager : MonoBehaviour
     public GameObject phaseReadyUI;
     public Button readyButton;
 
+    [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private GameObject gameClearUI;
+    [SerializeField] private GameObject TurretSelectUI;
+
     // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
     void Start()
     {
@@ -37,6 +41,8 @@ public class GameUIManager : MonoBehaviour
         // 자꾸 Awake랑 Enable이랑 GoldManager 싱글톤 시점이 어중간해서 Start에서 구독하게 했습니다.
         GoldManager.Instance.OnGoldChanged += GoldNumManager;
         GameManager.Instance.IsGameStateBeforeGateOpen += ShowPhaseReadyUI;
+        GameManager.Instance.OnGameOver += ShowGameOverUI;
+        GameManager.Instance.OnGameClear += ShowGameClearUI;
     }
 
     void OnEnable()
@@ -48,6 +54,8 @@ public class GameUIManager : MonoBehaviour
     {
         GoldManager.Instance.OnGoldChanged -= GoldNumManager;
         GameManager.Instance.IsGameStateBeforeGateOpen -= ShowPhaseReadyUI;
+        GameManager.Instance.OnGameOver -= ShowGameOverUI;
+        GameManager.Instance.OnGameClear -= ShowGameClearUI;
         readyButton.onClick.RemoveListener(OnReadyButtonClicked);
     }
 
@@ -57,6 +65,7 @@ public class GameUIManager : MonoBehaviour
         MainUI.SetActive(false);
         OptionUI.SetActive(true);
     }
+
     // 옵션 UI를 닫을 때 MainUI를 활성화하고 OptionUI를 비활성화하는 메서드
     public void CloseOptionUI()
     {
@@ -84,7 +93,7 @@ public class GameUIManager : MonoBehaviour
     {
         GoldText.text = $"{GoldManager.Instance.Gold}";
     }
-
+    
     // 경과 시간을 계산하여 분과 초로 나누어 UI에 표시하는 메서드
     public void TimeNumManager()
     {
@@ -109,41 +118,33 @@ public class GameUIManager : MonoBehaviour
     }
 
     // 매 프레임마다 골드 값과 경과 시간을 업데이트하는 메서드
+    
     void Update()
     {
         GoldNumManager();
         TimeNumManager();
-        if (Input.GetMouseButtonDown(0))
-        {
-            // 마우스 눌었을 때만 발동되게 바꿨습니다[kwj]
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                if (hit.collider.CompareTag("PlantSpot"))
-                {
-                    OpenPlantUI();
-                }
-                else
-                {
-                    PlantUI.SetActive(false);
-                }
-            } else
-            {
-                PlantUI.SetActive(false);
-            }
-        }
     }
-
+    
     private void ShowPhaseReadyUI()
     {
         phaseReadyUI.SetActive(true);
     }
 
+    private void ShowGameOverUI()
+    {
+        gameOverUI?.SetActive(true);
+    }
+
+    private void ShowGameClearUI()
+    {
+        phaseReadyUI?.SetActive(false);
+        gameClearUI?.SetActive(true);
+    }
+
     private void OnReadyButtonClicked()
     {
-        Debug.Log("NORMAL_MONSTER_SPAWN");
+        // Debug.Log("NORMAL_MONSTER_SPAWN");
         GameManager.Instance.Wave++; // wave = 1이 되므로, CurrentState = NORMAL_MONSTER_SPAWN;
-
         phaseReadyUI.SetActive(false);
     }
 }

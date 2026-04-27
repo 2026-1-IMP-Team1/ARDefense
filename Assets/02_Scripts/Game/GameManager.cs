@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("Event")]
     public event Action IsGameStateBeforeGateOpen;
+    public event Action OnGameOver;
+    public event Action OnGameClear;
+
+    private const int MAX_WAVE = 9; // Phase 3 보스 = 마지막 웨이브
 
     private GameFlowState currentState;
     private GameAge currentAge;
@@ -25,6 +29,8 @@ public class GameManager : MonoBehaviour
         set
         {
             wave = value;
+            if (wave == 0) return; // 0일 때 0 % 3 == 0으로 보스 페이즈가 되는 것을 방지
+
             // 3 웨이브 당 1 페이즈로 만들었습니다.
             // 3의 나머지를 이용하여서 만들었습니다.[kwj]
             if (wave % 3 == 1)
@@ -37,9 +43,61 @@ public class GameManager : MonoBehaviour
             else if (wave % 3 == 0) {
                 CurrentState = GameFlowState.BOSS_MONSTER_SPAWN;
             }
+
+            Debug.Log($"{currentState}, {wave}");
         }
     }
-    public int phase;
+    
+    // phase 변수를 수동으로 올리지 않고, wave 값에 따라 자동 계산되도록 프로퍼티화 (싱크 꼬임 완벽 해결)
+    public int Phase
+    {
+        get
+        {
+            return (wave == 0) ? 1 : ((wave - 1) / 3) + 1;
+        }
+    }
+
+    // 몬스터 마릿수 추적 및 클리어 대기 상태 변수
+    public int aliveMonsterCount = 0;
+    public bool IsWaitingForClear = false;
+
+    public void AddMonster()
+    {
+        aliveMonsterCount++;
+    }
+
+    public void RemoveMonster()
+    {
+        aliveMonsterCount--;
+        if (aliveMonsterCount <= 0)
+        {
+            aliveMonsterCount = 0;
+            TryAdvanceAfterBoss();
+        }
+    }
+
+    // IsWaitingForClear 상태이고 살아있는 몬스터가 없을 때 다음 페이즈로 전환.
+    // RemoveMonster와 스포너 양쪽에서 호출해 타이밍 경쟁 조건을 방지한다.
+    public void TryAdvanceAfterBoss()
+    {
+        if (!IsWaitingForClear || aliveMonsterCount > 0) return;
+        IsWaitingForClear = false;
+
+        if (wave >= MAX_WAVE)
+        {
+            CurrentState = GameFlowState.GAME_CLEAR;
+            return;
+        }
+
+        // 현재 Phase 완료 → 다음 시대로 전환 후 준비 단계로
+        switch (Phase)
+        {
+            case 1: CurrentAge = GameAge.MODERN_AGE; break;
+            case 2: CurrentAge = GameAge.FUTURE_AGE;  break;
+        }
+
+        CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+    }
     
     // 외부 스크립트에서 currentState를 참조하고 싶을 때는, 프로퍼티인 CurrentState를 참조하시면 됩니다.
     // 예시: EnemySpawner에서 일반 몬스터의 수가 0이 되었을 경우에
@@ -61,6 +119,18 @@ public class GameManager : MonoBehaviour
             {
                 IsGameStateBeforeGateOpen?.Invoke();
             }
+
+            if (currentState == GameFlowState.GAME_OVER)
+            {
+                OnGameOver?.Invoke();
+            }
+
+            if (currentState == GameFlowState.GAME_CLEAR)
+            {
+                OnGameClear?.Invoke();
+            }
+
+            Debug.Log($"{currentState}, {wave}");
         }
     }
 
@@ -74,6 +144,7 @@ public class GameManager : MonoBehaviour
         set
         {
             currentAge = value;
+            Debug.Log($"{CurrentAge}");
         }
     }
 
@@ -91,10 +162,10 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         
         // 게임을 완전히 처음 시작할 때는 일단 GAME_START 상태로 시작합니다.
-        currentState = GameFlowState.GAME_START;
+        CurrentState = GameFlowState.GAME_START;
 
         // 게임을 완전히 처음 시작할 때는 일단 MIDDLE_AGE 상태로 시작합니다.
-        currentAge = GameAge.MIDDLE_AGE;
+        CurrentAge = GameAge.MIDDLE_AGE;
     }
 
     void OnEnable()

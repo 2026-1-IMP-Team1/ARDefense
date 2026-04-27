@@ -225,13 +225,29 @@ public class GameBoardGenerator : MonoBehaviour
     private void SetPlayerPos()
     {
         GameObject playerObj = Instantiate(player, GameBoard.transform, false);
-
-        playerObj.transform.position += new Vector3(-MinWidthOfPlane / 2.0f, 0, 0);
+        playerObj.transform.localPosition = new Vector3(-MinWidthOfPlane / 2.0f, 0, 0);
     }
 
     private void SetChaosGatePos()
     {
-        chaosGate.SetActive(true);
+        GameObject gateObj = Instantiate(chaosGate);
+
+        Vector3 gateWorldPos   = GameBoard.transform.TransformPoint(new Vector3( MinWidthOfPlane / 2.0f, 0, 0));
+        Vector3 playerWorldPos = GameBoard.transform.TransformPoint(new Vector3(-MinWidthOfPlane / 2.0f, 0, 0));
+
+        gateObj.transform.position = gateWorldPos;
+
+        Vector3 dirToPlayer = playerWorldPos - gateWorldPos;
+        dirToPlayer.y = 0f;
+        if (dirToPlayer.sqrMagnitude > 0.001f)
+        {
+            // 프리팹 루트에 -90° Y 오프셋이 베이크되어 있어 함께 합성
+            gateObj.transform.rotation = Quaternion.LookRotation(dirToPlayer, Vector3.up)
+                                         * Quaternion.Euler(0, -90, 0);
+        }
+
+        EnemySpawnerClone spawner = gateObj.GetComponent<EnemySpawnerClone>();
+        spawner.Initialize(this);
     }
 
     private void Yes()

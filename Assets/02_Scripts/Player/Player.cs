@@ -2,15 +2,31 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private float maxHp = 100f;
+    private float hp;
+
+    public float HP => hp;
+    public float MaxHP => maxHp;
+
+    private void Awake()
     {
-        
+        hp = maxHp;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TakeDamage(float damage)
     {
-        
+        if (GameManager.Instance.CurrentState == GameFlowState.GAME_OVER) return;
+
+        hp = Mathf.Max(0f, hp - damage);
+        Debug.Log($"[Player] HP: {hp}/{maxHp}");
+
+        if (hp <= 0f) Die();
+    }
+
+    private void Die()
+    {
+        Debug.Log("[Player] 사망 - Game Over");
+        GameManager.Instance.CurrentState = GameFlowState.GAME_OVER;
+        Time.timeScale = 0;
     }
 }

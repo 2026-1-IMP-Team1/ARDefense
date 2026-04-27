@@ -5,6 +5,8 @@ public sealed class NormalMonster : Monster
 {
     public sealed override void Init()
     {
+        base.Init();
+
         type = MonsterType.NORMAL_MONSTER;
 
         hp = NORMAL_MONSTER_HP;

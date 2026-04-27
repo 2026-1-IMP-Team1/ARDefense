@@ -1,5 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
+using TMPro;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 using static Tile;
@@ -14,7 +17,9 @@ public class TurretInstaller : MonoBehaviour
     [SerializeField] private Camera cam;
 
     [Header("Turret Prefab")]
-    [SerializeField] private GameObject turretPrefab;
+    [SerializeField] private GameObject middleAgeTurretPrefab;
+    [SerializeField] private GameObject modernAgeTurretPrefab;
+    [SerializeField] private GameObject futureAgeTurretPrefab;
 
     [Header("포탑 스케일 배율 (1이면 tileSize와 동일한 크기로 설정)")]
     [SerializeField, Range(0.5f, 1f)] private float turretScaleValue = 0.9f;
@@ -22,6 +27,20 @@ public class TurretInstaller : MonoBehaviour
     [Header("타일 Layer Mask (특정 레이어만 터치 감지할 때 설정)")]
     [SerializeField] private LayerMask tileLayerMask = ~0;
 
+    //포탑 설치 UI 저장 변수[lyh]
+    public GameObject PlantUI;
+
+    [Header("포탑 선택 UI")]
+    [SerializeField] private GameObject turretSelectUI;
+    [SerializeField] private TextMeshProUGUI hpText;
+    [SerializeField] private TextMeshProUGUI damageText;
+    [SerializeField] private TextMeshProUGUI upgradeCountText;
+
+    // 터치한 타일 정보 저장 변수[lyh]
+    Tile tile;
+
+    private Turret selectedTurret;
+    private Tile selectedTile;
     private void Awake()
     {
         if (cam == null) cam = Camera.main;
@@ -33,7 +52,19 @@ public class TurretInstaller : MonoBehaviour
         if (!gameBoardGenerator.IsGameBoardGenerated) return;
 
         if (!TryGetTouchBeganPosition(out Vector2 screenPos)) return;
+
+        // PlantUI 버튼 등 UI 위의 터치는 무시
+        if (IsPointerOverUI(screenPos)) return;
+
         HandleTileTouch(screenPos);
+    }
+
+    private bool IsPointerOverUI(Vector2 screenPos)
+    {
+        var eventData = new PointerEventData(EventSystem.current) { position = screenPos };
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        return results.Count > 0;
     }
 
     private void OnEnable()
@@ -75,21 +106,84 @@ public class TurretInstaller : MonoBehaviour
     {
         Ray ray = cam.ScreenPointToRay(screenPos);
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 100f, tileLayerMask)) return;
-
-        // hit한 collider가 Tile인지 확인합니다.
-        Tile tile = hit.collider.GetComponent<Tile>();
-        if (tile == null) return;
-
-        // Tile이여도 이미 포탑이 설치된 tile이면 무시합니다.
-        if (tile.IsTurretInstalled)
+        // 레이어 마스크 없이 캐스트 → Turret·Tile 모두 감지
+        if (!Physics.Raycast(ray, out RaycastHit hit, 100f))
         {
-            Debug.Log($"[TurretInstaller] Tile ({tile.x}, {tile.y})에는 이미 포탑이 설치되어 있습니다.");
+            CloseBothUI();
             return;
         }
 
-        if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
-        InstallTurret(tile);
+        // ① hit한 오브젝트(또는 부모)에 Turret이 있으면 → 포탑 선택 UI
+        Turret hitTurret = hit.collider.GetComponentInParent<Turret>();
+        if (hitTurret != null)
+        {
+            selectedTurret = hitTurret;
+            selectedTile   = FindTileForTurret(hitTurret);
+            RefreshTurretInfoUI(hitTurret);
+            PlantUI.SetActive(false);
+            turretSelectUI.SetActive(true);
+            return;
+        }
+
+        // ② Tile이면 → 설치 UI (빈 타일) 또는 fallback 포탑 선택
+        tile = hit.collider.GetComponent<Tile>();
+        if (tile == null)
+        {
+            CloseBothUI();
+            return;
+        }
+
+        if (tile.IsTurretInstalled)
+        {
+            selectedTile   = tile;
+            selectedTurret = tile.InstalledTurret != null
+                ? tile.InstalledTurret.GetComponent<Turret>()
+                : null;
+            if (selectedTurret != null) RefreshTurretInfoUI(selectedTurret);
+            PlantUI.SetActive(false);
+            turretSelectUI.SetActive(selectedTurret != null);
+            return;
+        }
+
+        turretSelectUI.SetActive(false);
+        PlantUI.SetActive(true);
+    }
+
+    // Tile의 InstalledTurret을 순회해서 해당 포탑이 설치된 타일을 찾는다
+    private Tile FindTileForTurret(Turret turret)
+    {
+        if (gameBoardGenerator.GameBoard == null) return null;
+        foreach (Transform child in gameBoardGenerator.GameBoard.transform)
+        {
+            Tile t = child.GetComponent<Tile>();
+            if (t != null && t.InstalledTurret == turret.gameObject)
+                return t;
+        }
+        return null;
+    }
+
+    private void RefreshTurretInfoUI(Turret turret)
+    {
+        if (hpText          != null) hpText.text           = $"HP : {turret.HP:F0} / {turret.MaxHP:F0}";
+        if (damageText      != null) damageText.text       = $"Damage : {turret.AttackDamage:F0}";
+        if (upgradeCountText != null) upgradeCountText.text = $"Upgrade : {turret.UpgradeCount}";
+    }
+
+    private void CloseBothUI()
+    {
+        PlantUI.SetActive(false);
+        turretSelectUI.SetActive(false);
+    }
+
+    private GameObject GetTurretPrefabForCurrentAge()
+    {
+        return GameManager.Instance.CurrentAge switch
+        {
+            GameAge.MIDDLE_AGE => middleAgeTurretPrefab,
+            GameAge.MODERN_AGE => modernAgeTurretPrefab,
+            GameAge.FUTURE_AGE => futureAgeTurretPrefab,
+            _                  => middleAgeTurretPrefab
+        };
     }
 
     private int MeasureTurretCost()
@@ -110,8 +204,37 @@ public class TurretInstaller : MonoBehaviour
         }
     }
 
-    private void InstallTurret(Tile tile)
+    public void UpgradeTurret()
     {
+        if (selectedTurret == null) return;
+        if (!GoldManager.Instance.SpendGold(TURRET_UPGRADE_COST)) return;
+
+        selectedTurret.Upgrade();
+        RefreshTurretInfoUI(selectedTurret);
+    }
+
+    public void DestroyTurret()
+    {
+        if (selectedTurret == null) return;
+
+        if (selectedTile != null)
+        {
+            selectedTile.IsTurretInstalled = false;
+            selectedTile.InstalledTurret   = null;
+        }
+
+        Destroy(selectedTurret.gameObject);
+        selectedTurret = null;
+        selectedTile   = null;
+        turretSelectUI.SetActive(false);
+    }
+
+    public void InstallTurret()
+    {
+        
+        // ── 골드 차감 ───────────────────────────────────────[lyh]
+        if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
+
         // ── 포탑 월드 크기 계산 ──────────────────────────────
         float turretSize = TILE_SIZE * turretScaleValue;
 
@@ -130,6 +253,12 @@ public class TurretInstaller : MonoBehaviour
             : Quaternion.identity;
 
         // ── 포탑 생성 ────────────────────────────────────────
+        GameObject turretPrefab = GetTurretPrefabForCurrentAge();
+        if (turretPrefab == null)
+        {
+            Debug.LogWarning($"[TurretInstaller] {GameManager.Instance.CurrentAge} 프리팹이 설정되지 않았습니다.");
+            return;
+        }
         GameObject turret = Instantiate(turretPrefab, spawnPos, boardRotation);
         turret.transform.localScale = Vector3.one * turretSize;
 

@@ -67,7 +67,20 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
-    public abstract void Init();
+    public virtual void Init() {}
+
+    protected bool isCountedAsAlive = false;
+
+    protected virtual void Awake()
+    {
+        Init();
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.AddMonster();
+            isCountedAsAlive = true;
+        }
+        Debug.Log($"{name} : hp - {hp}, attackDamage - {attackDamage}, attackSpeed - {attackSpeed}");
+    }
 
     // 실시간 몬스터 체력 관리 
     /*
@@ -107,8 +120,6 @@ public abstract class Monster : MonoBehaviour
                 break;
             case MonsterType.BOSS_MONSTER:
                 rewardGold = Gold.BOSS_MONSTER_GOLD;
-                // 세대교체 넣기 및및 웨이브 조절(웨이브 가중치 조절)
-                GameManager.Instance.phase++;
                 break;
         }
 
@@ -118,7 +129,24 @@ public abstract class Monster : MonoBehaviour
             GoldManager.Instance.AddGold(rewardGold);
         }
 
+        // GameManager의 살아있는 몬스터 수치 반영
+        if (isCountedAsAlive && GameManager.Instance != null)
+        {
+            GameManager.Instance.RemoveMonster();
+            isCountedAsAlive = false;
+        }
+
         // 3. 몬스터 오브젝트 파괴
         Destroy(gameObject);
+    }
+
+    // 오브젝트가 파괴되거나 씬 이동 등으로 삭제될 때 카운트 누수 방지
+    private void OnDestroy()
+    {
+        if (isCountedAsAlive && GameManager.Instance != null)
+        {
+            GameManager.Instance.RemoveMonster();
+            isCountedAsAlive = false;
+        }
     }
 }

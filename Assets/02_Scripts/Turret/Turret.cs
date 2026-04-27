@@ -7,18 +7,20 @@ public class Turret : MonoBehaviour
 
     [Header("Health Point 변수 / 프로퍼티")]
     protected float hp;
+    protected float maxHp;
+
     public float HP
     {
-        get
-        {
-            return hp;
-        }
-
-        set
-        {
-            hp = value;
-        }
+        get { return hp; }
+        set { hp = value; }
     }
+
+    public float MaxHP
+    {
+        get { return maxHp; }
+    }
+
+    public int UpgradeCount { get; private set; } = 0;
 
     [Header("포탑의 공격 수치에 관련한 변수 / 프로퍼티")]
     protected float attackDamage;
@@ -90,10 +92,17 @@ public class Turret : MonoBehaviour
 
     protected virtual void Init()
     {
-        hp = TURRET_HP;
-        attackDamage = TURRET_ATTACK_DAMAGE;
         attackRange = TURRET_ATTACK_RANGE;
-        attackSpeed = TURRET_ATTACK_SPEED;
+    }
+
+    public void Upgrade()
+    {
+        maxHp += 10f;
+        attackDamage += 10f;
+        hp = maxHp;
+        UpgradeCount++;
+
+        Debug.Log($"{name} 업그레이드: maxHp={maxHp}, attackDamage={attackDamage}, upgradeCount={UpgradeCount}");
     }
 
     private void FindMonster()
@@ -134,5 +143,18 @@ public class Turret : MonoBehaviour
 
         Monster monster = target.GetComponent<Monster>();
         monster.TakeDamage(attackDamage);
+
+        Debug.Log($"{name} attack - damage : {attackDamage}, remaining HP: {monster.HP}");
+    }
+
+    public void TakeDamage(float damage)
+    {
+        Debug.Log($"{name} : attacked - remaining HP : {hp}");
+
+        hp -= damage;
+        if (hp <= 0f)
+        {
+            Destroy(gameObject);
+        }
     }
 }
