@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -168,9 +169,41 @@ public class GameManager : MonoBehaviour
         CurrentAge = GameAge.MIDDLE_AGE;
     }
 
+    // 게임을 처음부터 다시 시작하고 씬을 초기화할 때 호출하는 메서드입니다.
+    // (UI 버튼 이벤트나 게임 오버 재시작 로직에서 호출하세요)
+    public void RestartGame()
+    {
+        // 1. 게임 매니저 변수 초기화
+        wave = 0;
+        aliveMonsterCount = 0;
+        IsWaitingForClear = false;
+        CurrentAge = GameAge.MIDDLE_AGE;
+        CurrentState = GameFlowState.GAME_START;
+
+        // (만약 GoldManager 등 다른 싱글톤이 있다면 이곳에서 함께 변수 초기화가 필요합니다.)
+
+        // 2. 현재 활성화된 씬을 다시 로드하여 맵, 포탑, 몬스터 등을 모두 삭제하고 처음 상태로 되돌림
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     void OnEnable()
     {
-        // ...
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 씬 로드가 완료된 후 상태가 GAME_START라면, 다음 페이즈로 넘어갑니다.
+        // (DontDestroyOnLoad로 살아남은 GameManager는 재시작 시 Start()가 다시 호출되지 않기 때문입니다)
+        if (currentState == GameFlowState.GAME_START)
+        {
+            CurrentState = GameFlowState.BEFORE_GATE_OPEN;
+        }
     }
 
     void Start()
