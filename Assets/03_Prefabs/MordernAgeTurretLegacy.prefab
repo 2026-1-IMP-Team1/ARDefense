@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1053251201003972958}
   - component: {fileID: 730347059065382765}
   m_Layer: 0
-  m_Name: MordernAgeTurret 1
+  m_Name: MordernAgeTurretLegacy
   m_TagString: Turret
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

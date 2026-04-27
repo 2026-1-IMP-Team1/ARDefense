@@ -6070,8 +6070,8 @@ MonoBehaviour:
   gameBoardGenerator: {fileID: 1629617133}
   cam: {fileID: 87502748}
   middleAgeTurretPrefab: {fileID: 1424550477299632, guid: 776300a47e56c9940b775c4c51f09834, type: 3}
-  modernAgeTurretPrefab: {fileID: 3447111282844702401, guid: a862102559783ef49bd847b89be3e704, type: 3}
-  futureAgeTurretPrefab: {fileID: 3447111282844702401, guid: 226aafc3828d4f749b33b5f883eb5f10, type: 3}
+  modernAgeTurretPrefab: {fileID: 8671637467687091871, guid: d49ae72636d0f834abf4469c2920ae90, type: 3}
+  futureAgeTurretPrefab: {fileID: 1000010153274142, guid: 2652172d138981b4abc806ea8ec36564, type: 3}
   middleAgeTurretScaleValue: 0.35
   modernAgeTurretScaleValue: 0.9
   futureAgeTurretScaleValue: 0.9

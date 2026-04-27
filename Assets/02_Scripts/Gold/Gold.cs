@@ -3,7 +3,7 @@ using UnityEngine;
 public static class Gold
 {
     [Header("스타팅 골드의 양")]
-    public static readonly int GAME_START_GOLD = 100;
+    public static readonly int GAME_START_GOLD = 99999;
 
     [Header("각 몬스터 타입별로 처치 시 수급하는 골드의 양")]
 
