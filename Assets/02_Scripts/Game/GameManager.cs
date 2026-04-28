@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public event Action IsGameStateBeforeGateOpen;
     public event Action OnGameOver;
     public event Action OnGameClear;
+    public event Action OnAgeChanged;
 
     private const int MAX_WAVE = 9; // Phase 3 보스 = 마지막 웨이브
 
@@ -145,6 +146,7 @@ public class GameManager : MonoBehaviour
         set
         {
             currentAge = value;
+            OnAgeChanged?.Invoke();
             Debug.Log($"{CurrentAge}");
         }
     }
