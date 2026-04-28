@@ -66,23 +66,26 @@ public class Turret : MonoBehaviour
         }
     }
 
+    [Header("Animator")]
+    [SerializeField] protected Animator animator;
+
     [Header("Private")]
     private Transform target;
     private float fireCooldown = 0f;
     private AudioSource audioSource;
-    private Animator animator;
 
     void Awake()
     {
         Init();
         audioSource = GetComponent<AudioSource>();
-        animator = GetComponent<Animator>();
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
         FindMonster();
-        if (target == null) return;
+        if (target == null) return; 
 
         RotateToMonster();
 
@@ -135,7 +138,9 @@ public class Turret : MonoBehaviour
     {
         if (target == null) return;
 
-        Vector3 dir = (target.position - transform.position).normalized;
+        Vector3 dir = target.position - transform.position;
+        dir.y = 0f;
+        dir.Normalize();
         Quaternion lookRot = Quaternion.LookRotation(dir);
 
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 10f);
@@ -146,19 +151,20 @@ public class Turret : MonoBehaviour
         if (target == null) return;
 
         if (audioSource != null)
-        {
             audioSource.Play();
-        }
 
-        if (animator != null)
-        {
-            animator.SetTrigger("Shoot");
-        }
+        PlayAttackAnimation();
 
         Monster monster = target.GetComponent<Monster>();
         monster.TakeDamage(attackDamage);
 
         Debug.Log($"{name} attack - damage : {attackDamage}, remaining HP: {monster.HP}");
+    }
+
+    protected virtual void PlayAttackAnimation()
+    {
+        if (animator != null)
+            animator.SetTrigger("Shoot");
     }
 
     public void TakeDamage(float damage)

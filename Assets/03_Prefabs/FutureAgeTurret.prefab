@@ -218,6 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75e660014f9f73642a3352c52f50376a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FutureAgeTurret
+  animator: {fileID: 95000012164270796}
 --- !u!82 &8370513819704967699
 AudioSource:
   m_ObjectHideFlags: 0

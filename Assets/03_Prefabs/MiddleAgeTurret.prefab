@@ -495,6 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5343535cd657e4a87b0443f1a45739, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MiddleAgeTurret
+  animator: {fileID: 6221519598284821101}
 --- !u!82 &-1405951383982188765
 AudioSource:
   m_ObjectHideFlags: 0
@@ -507,7 +508,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: b69f4ec6c1f4391498fb974225b2639f, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
