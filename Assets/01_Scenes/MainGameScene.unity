@@ -6073,7 +6073,7 @@ MonoBehaviour:
   modernAgeTurretPrefab: {fileID: 3226583421603586234, guid: d42bbe4a1ebe6224ea39f6bcddf90354, type: 3}
   futureAgeTurretPrefab: {fileID: 1000010153274142, guid: 2652172d138981b4abc806ea8ec36564, type: 3}
   middleAgeTurretScaleValue: 0.35
-  modernAgeTurretScaleValue: 0.4
+  modernAgeTurretScaleValue: 0.45
   futureAgeTurretScaleValue: 0.9
   tileLayerMask:
     serializedVersion: 2

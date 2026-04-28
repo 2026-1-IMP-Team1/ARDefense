@@ -99,7 +99,7 @@ PrefabInstance:
       addedObject: {fileID: 9151043308775854672}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 45837351bfa504d4fa6f223fa79d5ab8, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2359508231631713789}
+      addedObject: {fileID: 4991784922512482731}
   m_SourcePrefab: {fileID: 100100000, guid: 45837351bfa504d4fa6f223fa79d5ab8, type: 3}
 --- !u!1 &4688196162290569827 stripped
 GameObject:
@@ -155,7 +155,7 @@ CapsuleCollider:
   m_Height: 2.2844143
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!82 &2359508231631713789
+--- !u!82 &4991784922512482731
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -166,8 +166,8 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 3b100c029bfe26c49a8a85259c90d14b, type: 3}
-  m_PlayOnAwake: 0
+  m_Resource: {fileID: 8300000, guid: 75350baebdf2fff409a042151b14882b, type: 3}
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

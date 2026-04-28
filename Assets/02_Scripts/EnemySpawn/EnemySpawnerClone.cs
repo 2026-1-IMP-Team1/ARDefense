@@ -96,8 +96,23 @@ public class EnemySpawnerClone : MonoBehaviour
         for (int i = 0; i < amountPerTime; i++)
         {
             Vector3 monsterPos = transform.position + (transform.forward * 0.1f) + new Vector3(0, 0.1f, 0);
-            Instantiate(monsterPrefab, monsterPos, transform.rotation);
-            yield return new WaitForSeconds(2.0f);
+            
+            if (GameManager.Instance.CurrentState == GameFlowState.NORMAL_MONSTER_SPAWN)
+            {
+                for (int j = 0; j <= GameManager.Instance.Phase; j++)
+                {
+                    Instantiate(monsterPrefab, monsterPos, transform.rotation);
+                    Debug.Log(GameManager.Instance.Phase);
+                    yield return new WaitForSeconds(0.2f);
+                }
+            }
+            else
+            {
+                Instantiate(monsterPrefab, monsterPos, transform.rotation);
+            }
+            
+            
+            yield return new WaitForSeconds(1.0f);
         }
 
         if (GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)

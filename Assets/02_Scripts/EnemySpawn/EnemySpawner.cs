@@ -86,7 +86,7 @@ public class EnemySpawner : MonoBehaviour
             // enemyPrefab을 사용하여 소환
             Instantiate(enemyPrefab, monsterPos, spawnedGate.transform.rotation);
             
-            yield return new WaitForSeconds(0.8f);
+            yield return new WaitForSeconds(0.2f);
         }
 
         if (GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)

@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 23000011333127838}
   - component: {fileID: 95000012164270796}
   - component: {fileID: 7900899367995124586}
-  - component: {fileID: -3169530730979884906}
+  - component: {fileID: 8370513819704967699}
   m_Layer: 0
   m_Name: FutureAgeTurret
   m_TagString: Turret
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75e660014f9f73642a3352c52f50376a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FutureAgeTurret
---- !u!82 &-3169530730979884906
+--- !u!82 &8370513819704967699
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -229,7 +229,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 76332ebc99fdcf046a7a45fa05a26706, type: 3}
+  m_Resource: {fileID: 8300000, guid: b69f4ec6c1f4391498fb974225b2639f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

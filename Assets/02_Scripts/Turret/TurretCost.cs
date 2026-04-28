@@ -8,5 +8,5 @@ public static class TurretCost
     public static int FUTURE_AGE_TURRET_COST => 50;
 
     [Header("Upgrade Cost")]
-    public const int TURRET_UPGRADE_COST = 50;
+    public const int TURRET_UPGRADE_COST = 20;
 }
