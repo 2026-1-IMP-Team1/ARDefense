@@ -70,11 +70,13 @@ public class Turret : MonoBehaviour
     private Transform target;
     private float fireCooldown = 0f;
     private AudioSource audioSource;
+    private Animator animator;
 
     void Awake()
     {
         Init();
         audioSource = GetComponent<AudioSource>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -146,6 +148,11 @@ public class Turret : MonoBehaviour
         if (audioSource != null)
         {
             audioSource.Play();
+        }
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Shoot");
         }
 
         Monster monster = target.GetComponent<Monster>();
