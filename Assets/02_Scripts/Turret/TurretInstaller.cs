@@ -34,6 +34,7 @@ public class TurretInstaller : MonoBehaviour
 
     [Header("포탑 선택 UI")]
     [SerializeField] private GameObject turretSelectUI;
+    [SerializeField] private UnityEngine.UI.Slider hpSlider;
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI damageText;
     [SerializeField] private TextMeshProUGUI upgradeCountText;
@@ -166,9 +167,16 @@ public class TurretInstaller : MonoBehaviour
 
     private void RefreshTurretInfoUI(Turret turret)
     {
-        if (hpText          != null) hpText.text           = $"HP : {turret.HP:F0} / {turret.MaxHP:F0}";
-        if (damageText      != null) damageText.text       = $"Damage : {turret.AttackDamage:F0}";
-        if (upgradeCountText != null) upgradeCountText.text = $"Upgrade : {turret.UpgradeCount}";
+        if (hpText           != null) hpText.text           = $"{turret.HP:F0} / {turret.MaxHP:F0}";
+        if (damageText       != null) damageText.text       = $"{turret.AttackDamage:F0}";
+        if (upgradeCountText != null) upgradeCountText.text = $" + {turret.UpgradeCount}";
+
+        if (hpSlider != null)
+        {
+            hpSlider.minValue = 0f;
+            hpSlider.maxValue = turret.MaxHP;
+            hpSlider.value = turret.HP;
+        }
     }
 
     private void CloseBothUI()
