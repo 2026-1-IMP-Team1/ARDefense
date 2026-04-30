@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.EventSystems;
@@ -28,6 +29,8 @@ public class TurretInstaller : MonoBehaviour
 
     [Header("타일 Layer Mask (특정 레이어만 터치 감지할 때 설정)")]
     [SerializeField] private LayerMask tileLayerMask = ~0;
+
+    public event Action OnTurretAlreadyInstalled;
 
     //포탑 설치 UI 저장 변수[lyh]
     public GameObject PlantUI;
@@ -252,7 +255,14 @@ public class TurretInstaller : MonoBehaviour
 
     public void InstallTurret()
     {
-        
+        if (tile == null) return;
+
+        if (tile.IsTurretInstalled)
+        {
+            OnTurretAlreadyInstalled?.Invoke();
+            return;
+        }
+
         // ── 골드 차감 ───────────────────────────────────────[lyh]
         if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
 
@@ -296,6 +306,8 @@ public class TurretInstaller : MonoBehaviour
         // ── 타일 상태 업데이트 ───────────────────────────────
         tile.IsTurretInstalled = true;
         tile.InstalledTurret = turret;
+
+        PlantUI.SetActive(false);
 
         Debug.Log($"[TurretInstaller] 포탑 설치됨: Tile ({tile.x}, {tile.y}), " +
                 $"Position {spawnPos}, Scale {turretSize:F3}m");

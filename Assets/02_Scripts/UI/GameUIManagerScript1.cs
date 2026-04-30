@@ -33,6 +33,10 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI insufficientGoldText;
     private Coroutine insufficientGoldCoroutine;
 
+    [SerializeField] private TurretInstaller turretInstaller;
+    [SerializeField] private TextMeshProUGUI alreadyInstalledText;
+    private Coroutine alreadyInstalledCoroutine;
+
     // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
     void Start()
     {
@@ -178,5 +182,18 @@ public class GameUIManager : MonoBehaviour
         insufficientGoldText.gameObject.SetActive(true);
         yield return new WaitForSeconds(1f);
         insufficientGoldText.gameObject.SetActive(false);
+    }
+
+    private void ShowAlreadyInstalledText()
+    {
+        if (alreadyInstalledCoroutine != null) StopCoroutine(alreadyInstalledCoroutine);
+        alreadyInstalledCoroutine = StartCoroutine(AlreadyInstalledRoutine());
+    }
+
+    IEnumerator AlreadyInstalledRoutine()
+    {
+        alreadyInstalledText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        alreadyInstalledText.gameObject.SetActive(false);
     }
 }
