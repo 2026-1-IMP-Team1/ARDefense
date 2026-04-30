@@ -8387,7 +8387,7 @@ MonoBehaviour:
   yesButton: {fileID: 1237026805}
   noButton: {fileID: 1889439891}
   findPlaceText: {fileID: 1114200699}
-  player: {fileID: 3576496166313348315, guid: 126be15773772094a861411d15faf090, type: 3}
+  player: {fileID: 1526554761915109350, guid: 05e8914f2a15eae41b202adc8643a8dc, type: 3}
 --- !u!114 &1629617134
 MonoBehaviour:
   m_ObjectHideFlags: 0

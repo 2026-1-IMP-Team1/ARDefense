@@ -268,6 +268,17 @@ public class GameBoardGenerator : MonoBehaviour
     {
         GameObject playerObj = Instantiate(player, GameBoard.transform, false);
         playerObj.transform.localPosition = new Vector3(-MinWidthOfPlane / 2.0f, 0, 0);
+
+        // 플레이어가 공중에 뜬 것처럼 보이지 않도록 발 아래에 타일 추가
+        // Tile 컴포넌트 없음 (터렛 설치 불가), Collider 제거 (터치 감지 미간섭)
+        GameObject playerTile = Instantiate(tilePrefab, GameBoard.transform);
+        playerTile.transform.localPosition = new Vector3(-MinWidthOfPlane / 2.0f - 0.05f, 0f, 0f);
+        playerTile.transform.localRotation = Quaternion.identity;
+        playerTile.transform.localScale    = new Vector3(TILE_SIZE, 0.01f, TILE_SIZE);
+        playerTile.name = "Tile_Player";
+
+        Collider playerTileCollider = playerTile.GetComponent<Collider>();
+        if (playerTileCollider != null) Destroy(playerTileCollider);
     }
 
     private void SetChaosGatePos()
