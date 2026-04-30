@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +30,8 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private GameObject gameClearUI;
     [SerializeField] private GameObject TurretSelectUI;
     [SerializeField] private TextMeshProUGUI ageText;
+    [SerializeField] private TextMeshProUGUI insufficientGoldText;
+    private Coroutine insufficientGoldCoroutine;
 
     // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
     void Start()
@@ -45,6 +47,7 @@ public class GameUIManager : MonoBehaviour
         GameManager.Instance.OnGameOver += ShowGameOverUI;
         GameManager.Instance.OnGameClear += ShowGameClearUI;
         GameManager.Instance.OnAgeChanged += UpdateAgeText;
+        GoldManager.Instance.OnGoldInsufficient += ShowInsufficientGoldText;
     }
 
     void OnEnable()
@@ -60,6 +63,7 @@ public class GameUIManager : MonoBehaviour
         GameManager.Instance.OnGameClear -= ShowGameClearUI;
         GameManager.Instance.OnAgeChanged -= UpdateAgeText;
         readyButton.onClick.RemoveListener(OnReadyButtonClicked);
+        GoldManager.Instance.OnGoldInsufficient -= ShowInsufficientGoldText;
     }
 
     // 옵션 UI를 열 때 MainUI를 비활성화하고 OptionUI를 활성화하는 메서드
@@ -161,5 +165,18 @@ public class GameUIManager : MonoBehaviour
         // Debug.Log("NORMAL_MONSTER_SPAWN");
         GameManager.Instance.Wave++; // wave = 1이 되므로, CurrentState = NORMAL_MONSTER_SPAWN;
         phaseReadyUI.SetActive(false);
+    }
+
+    private void ShowInsufficientGoldText()
+    {
+        if (insufficientGoldCoroutine != null) StopCoroutine(insufficientGoldCoroutine);
+        insufficientGoldCoroutine = StartCoroutine(InsufficientGoldRoutine());
+    }
+
+    IEnumerator InsufficientGoldRoutine()
+    {
+        insufficientGoldText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        insufficientGoldText.gameObject.SetActive(false);
     }
 }

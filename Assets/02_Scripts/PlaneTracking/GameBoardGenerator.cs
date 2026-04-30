@@ -49,6 +49,8 @@ public class GameBoardGenerator : MonoBehaviour
 
     private void OnEnable()
     {
+        arSession.Reset();
+
         planeManager.trackablesChanged.AddListener(OnTrackablesChanged);
         gameBoardSetUI.SetActive(true);
         window.SetActive(false);
