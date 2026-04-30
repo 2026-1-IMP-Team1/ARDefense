@@ -14879,9 +14879,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19fe476045b6544bb115dd20859c88e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnerClone
-  normalMonsterPrefab: {fileID: 4479534442783046050, guid: a72c64a151c727943afae85587437ce0, type: 3}
-  eliteMonsterPrefab: {fileID: 8143114311335202774, guid: 45c418c3311c6fa4ca69a422be7ee051, type: 3}
-  bossMonsterPrefab: {fileID: 5694449093870297182, guid: 9842ea5742124b9409abf0a5fb7c947e, type: 3}
+  normalMonsterPrefab: {fileID: 4688196162290569827, guid: 30f24909fbe01844f92b3a885576a54c, type: 3}
+  eliteMonsterPrefab: {fileID: 381492703982095360, guid: 5777c18feb09ca74b8075eef136cf372, type: 3}
+  bossMonsterPrefab: {fileID: 6035683165820053389, guid: 345fdefae9061724fa97f7da8d15f5c1, type: 3}
   waitTimeAfterBoard: 3
   amountPerTime: 0
 --- !u!1 &3575753572374740539

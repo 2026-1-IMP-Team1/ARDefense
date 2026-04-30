@@ -109,3 +109,6 @@ Assets/XR/Settings/ARFoundationRemoteSessionRecordsData.asset.meta
 
 # JetBrain Rider Editor
 .idea
+
+# Claude Code Worktree
+.claude

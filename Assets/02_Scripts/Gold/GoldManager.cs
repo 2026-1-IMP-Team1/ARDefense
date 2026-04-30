@@ -8,6 +8,15 @@ public class GoldManager : MonoBehaviour
 
     [Tooltip("Event")]
     public event Action OnGoldChanged;
+    public event Action OnGoldInsufficient;
+    
+
+    // 골드를 기본값으로 다시 세팅해주는 메서드
+    public void ResetGold()
+    {
+        Gold = GAME_START_GOLD;
+        OnGoldChanged?.Invoke(); // UI 업데이트 이벤트 발생
+    }
 
     [Header("골드 변수 / 프로퍼티")]
 
@@ -61,6 +70,7 @@ public class GoldManager : MonoBehaviour
         if (currentGold < goldToSpend)
         {
             Debug.Log($"골드가 부족합니다: 현재 골드 - {Gold} / 사용하려는 골드 - {goldToSpend}");
+            OnGoldInsufficient?.Invoke();
             return false;
         }
 

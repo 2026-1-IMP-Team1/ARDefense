@@ -44,14 +44,22 @@ public class GameBoardGenerator : MonoBehaviour
     private bool hasUserSelected; // 플레이어가 Yes, NO 선ㅇ택했는지 유무
     private bool isWaitingUserSelect; // 플레이어가 선택하는 중인지 유무 (사실 !hasUserSelected긴 합니다. )
 
+    private Coroutine dotAnimCoroutine;
+    private string findPlaceBaseText;
+
     private void OnEnable()
     {
+        arSession.Reset();
+
         planeManager.trackablesChanged.AddListener(OnTrackablesChanged);
         gameBoardSetUI.SetActive(true);
         window.SetActive(false);
 
         yesButton.onClick.AddListener(Yes);
         noButton.onClick.AddListener(No);
+
+        if (findPlaceText != null) findPlaceBaseText = findPlaceText.text;
+        StartDotAnimation();
     }
 
     private void OnDisable()
@@ -60,6 +68,38 @@ public class GameBoardGenerator : MonoBehaviour
 
         yesButton.onClick.RemoveListener(Yes);
         noButton.onClick.RemoveListener(No);
+
+        StopDotAnimation();
+    }
+
+    private void StartDotAnimation()
+    {
+        if (findPlaceText == null) return;
+        StopDotAnimation();
+        findPlaceText.gameObject.SetActive(true);
+        dotAnimCoroutine = StartCoroutine(AnimateDots());
+    }
+
+    private void StopDotAnimation()
+    {
+        if (dotAnimCoroutine != null)
+        {
+            StopCoroutine(dotAnimCoroutine);
+            dotAnimCoroutine = null;
+        }
+        if (findPlaceText != null) findPlaceText.gameObject.SetActive(false);
+    }
+
+    IEnumerator AnimateDots()
+    {
+        string[] dots = { ".", "..", "..." };
+        int index = 0;
+        while (true)
+        {
+            findPlaceText.text = findPlaceBaseText + dots[index];
+            index = (index + 1) % dots.Length;
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 
     private void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARPlane> args)
@@ -176,6 +216,7 @@ public class GameBoardGenerator : MonoBehaviour
         hasUserSelected = false;
         isWaitingUserSelect = true;
 
+        StopDotAnimation();
         window.SetActive(true);
 
         yield return new WaitUntil (() => hasUserSelected);
@@ -219,6 +260,7 @@ public class GameBoardGenerator : MonoBehaviour
             Debug.Log("[GameBoardGenerator] GameBoard를 다시 탐색합니다.");
 
             isWaitingUserSelect = false;
+            StartDotAnimation();
         }
     }
 
@@ -226,6 +268,17 @@ public class GameBoardGenerator : MonoBehaviour
     {
         GameObject playerObj = Instantiate(player, GameBoard.transform, false);
         playerObj.transform.localPosition = new Vector3(-MinWidthOfPlane / 2.0f, 0, 0);
+
+        // 플레이어가 공중에 뜬 것처럼 보이지 않도록 발 아래에 타일 추가
+        // Tile 컴포넌트 없음 (터렛 설치 불가), Collider 제거 (터치 감지 미간섭)
+        GameObject playerTile = Instantiate(tilePrefab, GameBoard.transform);
+        playerTile.transform.localPosition = new Vector3(-MinWidthOfPlane / 2.0f - 0.05f, 0f, 0f);
+        playerTile.transform.localRotation = Quaternion.identity;
+        playerTile.transform.localScale    = new Vector3(TILE_SIZE, 0.01f, TILE_SIZE);
+        playerTile.name = "Tile_Player";
+
+        Collider playerTileCollider = playerTile.GetComponent<Collider>();
+        if (playerTileCollider != null) Destroy(playerTileCollider);
     }
 
     private void SetChaosGatePos()
