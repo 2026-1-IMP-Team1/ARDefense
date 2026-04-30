@@ -28,5 +28,7 @@ public class Player : MonoBehaviour
         Debug.Log("[Player] 사망 - Game Over");
         GameManager.Instance.CurrentState = GameFlowState.GAME_OVER;
         Time.timeScale = 0;
+
+        Destroy(gameObject);
     }
 }
