@@ -44,6 +44,9 @@ public class GameBoardGenerator : MonoBehaviour
     private bool hasUserSelected; // 플레이어가 Yes, NO 선ㅇ택했는지 유무
     private bool isWaitingUserSelect; // 플레이어가 선택하는 중인지 유무 (사실 !hasUserSelected긴 합니다. )
 
+    private Coroutine dotAnimCoroutine;
+    private string findPlaceBaseText;
+
     private void OnEnable()
     {
         planeManager.trackablesChanged.AddListener(OnTrackablesChanged);
@@ -52,6 +55,9 @@ public class GameBoardGenerator : MonoBehaviour
 
         yesButton.onClick.AddListener(Yes);
         noButton.onClick.AddListener(No);
+
+        if (findPlaceText != null) findPlaceBaseText = findPlaceText.text;
+        StartDotAnimation();
     }
 
     private void OnDisable()
@@ -60,6 +66,38 @@ public class GameBoardGenerator : MonoBehaviour
 
         yesButton.onClick.RemoveListener(Yes);
         noButton.onClick.RemoveListener(No);
+
+        StopDotAnimation();
+    }
+
+    private void StartDotAnimation()
+    {
+        if (findPlaceText == null) return;
+        StopDotAnimation();
+        findPlaceText.gameObject.SetActive(true);
+        dotAnimCoroutine = StartCoroutine(AnimateDots());
+    }
+
+    private void StopDotAnimation()
+    {
+        if (dotAnimCoroutine != null)
+        {
+            StopCoroutine(dotAnimCoroutine);
+            dotAnimCoroutine = null;
+        }
+        if (findPlaceText != null) findPlaceText.gameObject.SetActive(false);
+    }
+
+    IEnumerator AnimateDots()
+    {
+        string[] dots = { ".", "..", "..." };
+        int index = 0;
+        while (true)
+        {
+            findPlaceText.text = findPlaceBaseText + dots[index];
+            index = (index + 1) % dots.Length;
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 
     private void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARPlane> args)
@@ -176,6 +214,7 @@ public class GameBoardGenerator : MonoBehaviour
         hasUserSelected = false;
         isWaitingUserSelect = true;
 
+        StopDotAnimation();
         window.SetActive(true);
 
         yield return new WaitUntil (() => hasUserSelected);
@@ -219,6 +258,7 @@ public class GameBoardGenerator : MonoBehaviour
             Debug.Log("[GameBoardGenerator] GameBoard를 다시 탐색합니다.");
 
             isWaitingUserSelect = false;
+            StartDotAnimation();
         }
     }
 
