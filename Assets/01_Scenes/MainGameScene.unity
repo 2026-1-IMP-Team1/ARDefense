@@ -3478,7 +3478,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &781805605
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8408,6 +8408,9 @@ MonoBehaviour:
   middleAgeTurretScaleValue: 0.35
   modernAgeTurretScaleValue: 0.45
   futureAgeTurretScaleValue: 0.9
+  middleAgeSilhouettePrefab: {fileID: 8804077511454541165, guid: a2d46b108a44f13458cfbcdc3fa4cfeb, type: 3}
+  modernAgeSilhouettePrefab: {fileID: 3226583421603586234, guid: aa2c30ade857994488a129df1838a8a9, type: 3}
+  futureAgeSilhouettePrefab: {fileID: 1000010153274142, guid: 0f440d459895f744da128a5741291a30, type: 3}
   tileLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295

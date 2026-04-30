@@ -27,6 +27,13 @@ public class TurretInstaller : MonoBehaviour
     [SerializeField, Range(0.1f, 2f)] private float modernAgeTurretScaleValue  = 0.9f;
     [SerializeField, Range(0.1f, 2f)] private float futureAgeTurretScaleValue  = 0.9f;
 
+    [Header("터렛 실루엣 Prefab")]
+    [SerializeField] private GameObject middleAgeSilhouettePrefab;
+    [SerializeField] private GameObject modernAgeSilhouettePrefab;
+    [SerializeField] private GameObject futureAgeSilhouettePrefab;
+
+    private GameObject currentSilhouette;
+
     [Header("타일 Layer Mask (특정 레이어만 터치 감지할 때 설정)")]
     [SerializeField] private LayerMask tileLayerMask = ~0;
 
@@ -126,6 +133,7 @@ public class TurretInstaller : MonoBehaviour
             selectedTurret = hitTurret;
             selectedTile   = FindTileForTurret(hitTurret);
             RefreshTurretInfoUI(hitTurret);
+            HideSilhouette();
             PlantUI.SetActive(false);
             turretSelectUI.SetActive(true);
             return;
@@ -146,6 +154,7 @@ public class TurretInstaller : MonoBehaviour
                 ? tile.InstalledTurret.GetComponent<Turret>()
                 : null;
             if (selectedTurret != null) RefreshTurretInfoUI(selectedTurret);
+            HideSilhouette();
             PlantUI.SetActive(false);
             turretSelectUI.SetActive(selectedTurret != null);
             return;
@@ -153,6 +162,7 @@ public class TurretInstaller : MonoBehaviour
 
         turretSelectUI.SetActive(false);
         PlantUI.SetActive(true);
+        ShowSilhouette(tile);
     }
 
     // Tile의 InstalledTurret을 순회해서 해당 포탑이 설치된 타일을 찾는다
@@ -186,6 +196,43 @@ public class TurretInstaller : MonoBehaviour
     {
         PlantUI.SetActive(false);
         turretSelectUI.SetActive(false);
+        HideSilhouette();
+    }
+
+    private void ShowSilhouette(Tile targetTile)
+    {
+        HideSilhouette();
+
+        GameObject prefab = GetSilhouettePrefabForCurrentAge();
+        if (prefab == null || gameBoardGenerator.GameBoard == null) return;
+
+        float turretSize      = TILE_SIZE * GetTurretScaleForCurrentAge();
+        float tileHalfHeight  = targetTile.transform.lossyScale.y * 0.5f;
+        float turretHalfHeight = turretSize * 0.5f;
+        Vector3   spawnPos  = targetTile.transform.position + targetTile.transform.up * (tileHalfHeight + turretHalfHeight);
+        Quaternion boardRot = gameBoardGenerator.GameBoard.transform.rotation;
+
+        currentSilhouette = Instantiate(prefab, spawnPos, boardRot);
+        currentSilhouette.transform.localScale = Vector3.one * turretSize;
+        currentSilhouette.transform.SetParent(gameBoardGenerator.GameBoard.transform, worldPositionStays: true);
+    }
+
+    private void HideSilhouette()
+    {
+        if (currentSilhouette == null) return;
+        Destroy(currentSilhouette);
+        currentSilhouette = null;
+    }
+
+    private GameObject GetSilhouettePrefabForCurrentAge()
+    {
+        return GameManager.Instance.CurrentAge switch
+        {
+            GameAge.MIDDLE_AGE => middleAgeSilhouettePrefab,
+            GameAge.MODERN_AGE => modernAgeSilhouettePrefab,
+            GameAge.FUTURE_AGE => futureAgeSilhouettePrefab,
+            _                  => middleAgeSilhouettePrefab
+        };
     }
 
     private GameObject GetTurretPrefabForCurrentAge()
@@ -307,6 +354,7 @@ public class TurretInstaller : MonoBehaviour
         tile.IsTurretInstalled = true;
         tile.InstalledTurret = turret;
 
+        HideSilhouette();
         PlantUI.SetActive(false);
 
         Debug.Log($"[TurretInstaller] 포탑 설치됨: Tile ({tile.x}, {tile.y}), " +
