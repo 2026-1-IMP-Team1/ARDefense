@@ -1956,7 +1956,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <TItle>
+  m_text: AR Defense
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 00a37bd6673307148a98067759a4738e, type: 2}
   m_sharedMaterial: {fileID: 311709303378746098, guid: 00a37bd6673307148a98067759a4738e, type: 2}
@@ -2469,7 +2469,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: bce5f5b338e713046b5e9c4b5e44201a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
