@@ -299,7 +299,7 @@ public class GameBoardGenerator : MonoBehaviour
                                          * Quaternion.Euler(0, -90, 0);
         }
 
-        EnemySpawnerClone spawner = gateObj.GetComponent<EnemySpawnerClone>();
+        EnemySpawner spawner = gateObj.GetComponent<EnemySpawner>();
         spawner.Initialize(this);
     }
 
