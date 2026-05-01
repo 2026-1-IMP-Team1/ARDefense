@@ -2,19 +2,21 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public float speed = 1.0f;
-    public float attackRange = 0.2f; //사거리
-    private Transform target;
-    private Monster monster;
-    private float attackCooldown = 2f;
-    private AudioSource audioSource;
+    public float speed = 1.0f;          // Monster's movement speed
+    public float attackRange = 0.2f;    // Maximum attack range radius for the target
+    private Transform target;           // The current target the monster is tracking (turret or player)
+    private Monster monster;            // Component to get the monster's stats (attack power, attack speed, etc.)
+    private float attackCooldown = 2f;  // Cooldown variable for waiting until the next attack
+    private AudioSource audioSource;    // Audio source for sound effects to play on attack
 
+    // Initializes necessary components when the object is created.
     void Awake()
     {
         monster = GetComponent<Monster>();
         audioSource = GetComponent<AudioSource>();
     }
 
+    // Every frame, it searches for a target and executes movement and attack logic based on conditions.
     void Update()
     {
         if (GameManager.Instance != null)
@@ -23,9 +25,9 @@ public class EnemyAI : MonoBehaviour
             if (s == GameFlowState.GAME_OVER || s == GameFlowState.GAME_CLEAR) return;
         }
 
-        FindTarget(); //타겟 찾기 (플레이어나 터렛)
+        FindTarget(); // Find target (player or turret)
 
-        if (target == null) //타겟 없으면 앞으로 직진
+        if (target == null) // If there is no target, move straight forward
         {
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
             return;
@@ -34,7 +36,7 @@ public class EnemyAI : MonoBehaviour
         MoveToTarget();
 
         attackCooldown -= Time.deltaTime;
-        if (Vector3.Distance(transform.position, target.position) <= attackRange && attackCooldown <= 0f) //사거리 안쪽이면 공격
+        if (Vector3.Distance(transform.position, target.position) <= attackRange && attackCooldown <= 0f) // Attack if within range
         {
             Attack();
             int spd = (monster != null && monster.AttackSpeed > 0) ? monster.AttackSpeed : 1;
@@ -42,14 +44,15 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    // Finds a target on the map. The first priority is to find the nearest turret, and if there are no turrets, the second priority is to target the player.
     void FindTarget()
     {
-        // 1순위: 가장 가까운 터렛 찾기
+        // Priority 1: Find the nearest turret
         GameObject[] turrets = GameObject.FindGameObjectsWithTag("Turret");
         float closestDist = Mathf.Infinity;
         GameObject nearestTurret = null;
 
-        // 모든 터렛 중 가장 가까운 터렛을 선별하기
+        // Select the closest turret among all turrets
         foreach (GameObject t in turrets)
         {
             float dist = Vector3.Distance(transform.position, t.transform.position);
@@ -60,33 +63,34 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        // 가까운 터렛이 있다면 타겟으로 설정
+        // If a nearby turret exists, set it as the target
         if (nearestTurret != null)
         {
             target = nearestTurret.transform;
         }
         else
         {
-            // 2순위: 터렛이 없으면 플레이어 찾기
+            // Priority 2: If there are no turrets, find the player
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null) target = player.transform;
         }
     }
 
-    // 타겟을 향해 몸을 돌리고 이동
+    // Smoothly rotates (Slerp) towards the target and moves towards it.
     void MoveToTarget()
     {
         Vector3 dir = (target.position - transform.position).normalized;
-        dir.y = 0; //y축은 일단 고정시켰습니다!
+        dir.y = 0; // The y-axis is fixed for now!
         
         if (dir != Vector3.zero)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 0.1f);
         }
-        //타겟 방향으로 이동
+        // Move towards the target
         transform.position += dir * speed * Time.deltaTime;
     }
 
+    // Checks the component of the target (player or turret) to inflict damage and play the attack sound.
     void Attack()
     {
         if (target == null) return;

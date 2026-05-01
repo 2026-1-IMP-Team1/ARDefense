@@ -1,14 +1,14 @@
 using UnityEngine;
 using System.Collections;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawnerClone : MonoBehaviour
 {
-    [Header("스폰할 몬스터 프리팹")]
+    [Header("Monster Prefabs to Spawn")]
     [SerializeField] private GameObject normalMonsterPrefab; // Normal monster prefab
     [SerializeField] private GameObject eliteMonsterPrefab;  // Elite monster prefab
     [SerializeField] private GameObject bossMonsterPrefab;   // Boss monster prefab
 
-    [Header("스폰 설정")]
+    [Header("Spawn Settings")]
     public float waitTimeAfterBoard = 3.0f; // Wait time after board generation until spawn starts
     public int amountPerTime;               // Number of monsters to spawn in the current wave
 
@@ -76,7 +76,7 @@ public class EnemySpawner : MonoBehaviour
 
         if (monsterPrefab == null)
         {
-            Debug.LogWarning("[EnemySpawnerClone] 현재 상태에 맞는 몬스터 프리팹이 없습니다.");
+            Debug.LogWarning("[EnemySpawnerClone] No monster prefab available for the current state.");
             yield break;
         }
 

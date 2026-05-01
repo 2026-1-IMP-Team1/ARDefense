@@ -5,7 +5,7 @@ public class Turret : MonoBehaviour
 {
     protected TurretType type;
 
-    [Header("Health Point 변수 / 프로퍼티")]
+    [Header("Health Point Variables / Properties")]
     protected float hp;
     protected float maxHp;
 
@@ -22,7 +22,7 @@ public class Turret : MonoBehaviour
 
     public int UpgradeCount { get; private set; } = 0;
 
-    [Header("포탑의 공격 수치에 관련한 변수 / 프로퍼티")]
+    [Header("Combat Stat Variables / Properties")]
     protected float attackDamage;
     protected float attackSpeed;
     protected float attackRange;
@@ -69,10 +69,10 @@ public class Turret : MonoBehaviour
     [Header("Animator")]
     [SerializeField] protected Animator animator;
 
-    [Header("Private")]
-    private Transform target;
-    private float fireCooldown = 0f;
-    private AudioSource audioSource;
+    [Header("Private Fields")]
+    private Transform target;           // Current monster target to attack
+    private float fireCooldown = 0f;    // Remaining cooldown time until the next attack
+    private AudioSource audioSource;    // Audio source for attack sounds
 
     void Awake()
     {
@@ -97,11 +97,17 @@ public class Turret : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Virtual function to initialize base turret stats (range, etc.)
+    /// </summary>
     protected virtual void Init()
     {
         attackRange = TURRET_ATTACK_RANGE;
     }
 
+    /// <summary>
+    /// Increases turret HP and attack damage, and increments the upgrade count
+    /// </summary>
     public void Upgrade()
     {
         maxHp += 10f;
@@ -109,9 +115,12 @@ public class Turret : MonoBehaviour
         hp = maxHp;
         UpgradeCount++;
 
-        Debug.Log($"{name} 업그레이드: maxHp={maxHp}, attackDamage={attackDamage}, upgradeCount={UpgradeCount}");
+        Debug.Log($"{name} Upgraded: maxHp={maxHp}, attackDamage={attackDamage}, upgradeCount={UpgradeCount}");
     }
 
+    /// <summary>
+    /// Searches for the closest monster within attack range and sets it as the target
+    /// </summary>
     private void FindMonster()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, attackRange);
@@ -134,6 +143,9 @@ public class Turret : MonoBehaviour
         target = closest;
     }
 
+    /// <summary>
+    /// Smoothly rotates the turret towards the target monster
+    /// </summary>
     private void RotateToMonster()
     {
         if (target == null) return;
@@ -146,6 +158,9 @@ public class Turret : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 10f);
     }
 
+    /// <summary>
+    /// Deals damage to the target monster and plays attack animations/sounds
+    /// </summary>
     private void Attack()
     {
         if (target == null) return;
@@ -161,12 +176,18 @@ public class Turret : MonoBehaviour
         Debug.Log($"{name} attack - damage : {attackDamage}, remaining HP: {monster.HP}");
     }
 
+    /// <summary>
+    /// Virtual function to execute the turret's attack animation
+    /// </summary>
     protected virtual void PlayAttackAnimation()
     {
         if (animator != null)
             animator.SetTrigger("Shoot");
     }
 
+    /// <summary>
+    /// Called when the turret takes damage; destroys the object if HP falls to 0 or below
+    /// </summary>
     public void TakeDamage(float damage)
     {
         Debug.Log($"{name} : attacked - remaining HP : {hp}");

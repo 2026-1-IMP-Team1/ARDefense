@@ -2,10 +2,10 @@ using UnityEngine;
 
 public static class Gold
 {
-    [Header("스타팅 골드의 양")]
+    [Header("the amount of starting gold")]
     public static readonly int GAME_START_GOLD = 30;
 
-    [Header("각 몬스터 타입별로 처치 시 수급하는 골드의 양")]
+    [Header("the amount of gold earned for defeating each monster type")]
 
     public static readonly int PhaseWeight = GameManager.Instance.Phase;
     // 페이즈마다 추가 골드 가중치를 넣어봤습니다. (세대진화)

@@ -8,9 +8,9 @@ using System.Collections;
 
 public class GameBoardGenerator : MonoBehaviour
 {
-    [Header("GameBoard 타일 Condition 세팅")]
-    [SerializeField] private int columns; // 가로 타일 개수
-    [SerializeField] private int rows; // 세로 타일 개수
+    [Header("GameBoard Tile Condition Settings")]
+    [SerializeField] private int columns; // Number of tiles horizontally
+    [SerializeField] private int rows;    // Number of tiles vertically
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private bool alignBoardToCamera = true;
 
@@ -38,14 +38,14 @@ public class GameBoardGenerator : MonoBehaviour
     public GameObject GameBoard { get; private set; } = null;
     public ARPlane PlaneOfGameBoard { get; private set; } = null;
 
-    private float MinWidthOfPlane => columns * TILE_SIZE;
-    private float MinHeightOfPlane => rows * TILE_SIZE;
-    private bool isGameBoardSet; // 플레이어가 플레이할 게임 보드 선택했는지 유무
-    private bool hasUserSelected; // 플레이어가 Yes, NO 선ㅇ택했는지 유무
-    private bool isWaitingUserSelect; // 플레이어가 선택하는 중인지 유무 (사실 !hasUserSelected긴 합니다. )
+    private float MinWidthOfPlane => columns * TILE_SIZE; // Minimum horizontal length required to generate the game board
+    private float MinHeightOfPlane => rows * TILE_SIZE;   // Minimum vertical length required to generate the game board
+    private bool isGameBoardSet; // Whether the player has confirmed the selection of the game board
+    private bool hasUserSelected; // Whether the player has clicked Yes or No
+    private bool isWaitingUserSelect; // Whether the system is currently waiting for player input
 
-    private Coroutine dotAnimCoroutine;
-    private string findPlaceBaseText;
+    private Coroutine dotAnimCoroutine; // Coroutine for the "Searching for plane..." text dot animation
+    private string findPlaceBaseText;   // Variable to store the original base text (excluding dots)
 
     private void OnEnable()
     {
@@ -72,6 +72,9 @@ public class GameBoardGenerator : MonoBehaviour
         StopDotAnimation();
     }
 
+    /// <summary>
+    /// Starts the dot animation where "." characters appear sequentially in the text.
+    /// </summary>
     private void StartDotAnimation()
     {
         if (findPlaceText == null) return;
@@ -80,6 +83,9 @@ public class GameBoardGenerator : MonoBehaviour
         dotAnimCoroutine = StartCoroutine(AnimateDots());
     }
 
+    /// <summary>
+    /// Stops the dot animation coroutine and hides the text.
+    /// </summary>
     private void StopDotAnimation()
     {
         if (dotAnimCoroutine != null)
@@ -102,6 +108,9 @@ public class GameBoardGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Event callback that checks if a board can be placed whenever AR planes are added or updated.
+    /// </summary>
     private void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARPlane> args)
     {
         if (IsGameBoardGenerated || isWaitingUserSelect) return;
@@ -116,23 +125,29 @@ public class GameBoardGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Validates whether the detected plane meets the minimum size requirements for the game board.
+    /// </summary>
     private bool IsValidPlaneToPlaceGameBoard(ARPlane plane)
     {
         if (plane.alignment != PlaneAlignment.HorizontalUp) return false;
 
-        // 찾은 Plane의 가로 >= 최소 가로 길이, 세로 >= 최소 세로 길이일 때 true
+        // True if Plane width >= Min width AND height >= Min height
         bool isFitNormal  = plane.size.x >= MinWidthOfPlane && plane.size.y >= MinHeightOfPlane;
 
-        // 찾은 Plane의 가로 >= 최소 세로 길이, 세로 >= 최소 가로 길이일 때도 상관 없으므로 true
+        // True if Plane width >= Min height AND height >= Min width (rotated fit)
         bool isFitRotated = plane.size.x >= MinHeightOfPlane && plane.size.y >= MinWidthOfPlane;
 
         if (!isFitNormal && !isFitRotated) return false;
 
-        // 적합한 Plane을 찾았으면 해당 Plane에 GameBoard 생성
+        // If a suitable plane is found, create the GameBoard on that plane
         PlaceGameBoard(plane);
         return true;
     }
 
+    /// <summary>
+    /// Instantiates and positions the game board (grid) and tile objects on the suitable plane.
+    /// </summary>
     private void PlaceGameBoard(ARPlane plane)
     {
         isWaitingUserSelect = true;
@@ -142,7 +157,7 @@ public class GameBoardGenerator : MonoBehaviour
         GameBoard = new GameObject("GameBoard");
         Vector3 boardPos = plane.transform.position;
 
-        // 1. 카메라가 있는 방향 기준으로 GameBoard를 정렬(Rotation 조정) 후, GameBoard를 위치시킨다.
+        // 1. Align the GameBoard relative to the camera direction (adjust Rotation), then position the GameBoard.
         Quaternion boardRot;
         if (alignBoardToCamera && Camera.main != null)
         {
@@ -161,9 +176,9 @@ public class GameBoardGenerator : MonoBehaviour
 
         GameBoard.transform.SetPositionAndRotation(boardPos, boardRot);
 
-        // 2. 단위 타일 그리드를 생성한다. (가로 개수: columns, 세로 개수 : rows)
-        // 생성된 GameBoard의 가로 길이 : columns * TILE_SIZE
-        // 생성된 GameBoard의 세로 길이 : rows * TILE_SIZE
+        // 2. Generate the unit tile grid (Horizontal count: columns, Vertical count: rows)
+        // Total GameBoard width: columns * TILE_SIZE
+        // Total GameBoard height: rows * TILE_SIZE
         float halfW = (columns * TILE_SIZE) * 0.5f;
         float halfD = (rows    * TILE_SIZE) * 0.5f;
         float renderSize = TILE_SIZE;
@@ -172,7 +187,7 @@ public class GameBoardGenerator : MonoBehaviour
         {
             for (int c = 0; c < columns; c++)
             {
-                // GameBoard의 로컬 좌표계에서 타일 중심 위치를 계산
+                // Calculate tile center position in the GameBoard's local coordinate system
                 Vector3 localPos = new Vector3(
                     -halfW + c * TILE_SIZE + TILE_SIZE * 0.5f,
                     0f,
@@ -192,25 +207,14 @@ public class GameBoardGenerator : MonoBehaviour
             }
         }
 
-        // 유저에게 UI 띄우기
+        // Show selection UI to the user
         StartCoroutine(ShowGameBoardSelectUI());
     }
 
-    /*private void PlaceChaosGate(float halfD)
-    {
-        // Vector3 gateLocalPos = new Vector3(0f, 0f, halfD);
-        GameObject gate = Instantiate(chaosGate, GameBoard.transform);
-    }*/
 
-    /*private void SetAllPlanesVisible(bool visible)
-    {
-        foreach (ARPlane plane in planeManager.trackables)
-        {
-            plane.gameObject.SetActive(visible);
-            Debug.Log($"{plane.name}");    
-        }
-    }*/
-
+    /// <summary>
+    /// Coroutine that controls the popup UI asking the player whether to use the currently placed game board.
+    /// </summary>
     IEnumerator ShowGameBoardSelectUI()
     {
         hasUserSelected = false;
@@ -221,16 +225,16 @@ public class GameBoardGenerator : MonoBehaviour
 
         yield return new WaitUntil (() => hasUserSelected);
 
-        // 선택 이후 .. 
+        // Logic after selection... 
 
         window.SetActive(false);
 
         if (isGameBoardSet)
         {
-            // 3. Chaos Gate를 GameBoard에 맞추어 생성한다.
+            // 3. Create Chaos Gate aligned with the GameBoard.
             // PlaceChaosGate(halfD);
 
-            // 4. GameBoard를 다 생성했으므로 Plane Tracking을 정리한다.
+            // 4. GameBoard generation complete, cleanup plane tracking.
             IsGameBoardGenerated = true;
 
             isWaitingUserSelect = false;
@@ -239,9 +243,9 @@ public class GameBoardGenerator : MonoBehaviour
 
             planeManager.enabled = false;
 
-            Debug.Log($"[GameBoardGenerator] GameBoard 생성: {columns} x {rows} 타일 그리드, " +
-                    $"타일 크기 {TILE_SIZE * 100f:F1}cm, " +
-                    $"총 보드 크기 {MinWidthOfPlane * 100f:F1}cm x {MinHeightOfPlane * 100f:F1}cm");
+            Debug.Log($"[GameBoardGenerator] GameBoard Created: {columns} x {rows} tile grid, " +
+                    $"Tile size {TILE_SIZE * 100f:F1}cm, " +
+                    $"Total Board Size {MinWidthOfPlane * 100f:F1}cm x {MinHeightOfPlane * 100f:F1}cm");
 
             GameManager.Instance.CurrentState = GameFlowState.BEFORE_GATE_OPEN;
 
@@ -257,20 +261,23 @@ public class GameBoardGenerator : MonoBehaviour
             PlaneOfGameBoard = null;
 
             arSession.Reset();
-            Debug.Log("[GameBoardGenerator] GameBoard를 다시 탐색합니다.");
+            Debug.Log("[GameBoardGenerator] Restarting GameBoard search.");
 
             isWaitingUserSelect = false;
             StartDotAnimation();
         }
     }
 
+    /// <summary>
+    /// Positions the player (AR Camera proxy) at the left end of the board after confirmation.
+    /// </summary>
     private void SetPlayerPos()
     {
         GameObject playerObj = Instantiate(player, GameBoard.transform, false);
         playerObj.transform.localPosition = new Vector3(-MinWidthOfPlane / 2.0f, 0, 0);
 
-        // 플레이어가 공중에 뜬 것처럼 보이지 않도록 발 아래에 타일 추가
-        // Tile 컴포넌트 없음 (터렛 설치 불가), Collider 제거 (터치 감지 미간섭)
+        // Add a tile under the player's feet so they don't appear to be floating.
+        // No Tile component (cannot install turrets), Collider removed (no interference with touch detection).
         GameObject playerTile = Instantiate(tilePrefab, GameBoard.transform);
         playerTile.transform.localPosition = new Vector3(-MinWidthOfPlane / 2.0f - 0.05f, 0f, 0f);
         playerTile.transform.localRotation = Quaternion.identity;
@@ -281,6 +288,9 @@ public class GameBoardGenerator : MonoBehaviour
         if (playerTileCollider != null) Destroy(playerTileCollider);
     }
 
+    /// <summary>
+    /// Positions the monster spawn point (Chaos Gate) at the right end of the board after confirmation.
+    /// </summary>
     private void SetChaosGatePos()
     {
         GameObject gateObj = Instantiate(chaosGate);
@@ -294,7 +304,7 @@ public class GameBoardGenerator : MonoBehaviour
         dirToPlayer.y = 0f;
         if (dirToPlayer.sqrMagnitude > 0.001f)
         {
-            // 프리팹 루트에 -90° Y 오프셋이 베이크되어 있어 함께 합성
+            // The prefab root has a -90° Y offset baked in, so it is composited here.
             gateObj.transform.rotation = Quaternion.LookRotation(dirToPlayer, Vector3.up)
                                          * Quaternion.Euler(0, -90, 0);
         }
@@ -303,12 +313,18 @@ public class GameBoardGenerator : MonoBehaviour
         spawner.Initialize(this);
     }
 
+    /// <summary>
+    /// Event handler for the confirmation button (Yes).
+    /// </summary>
     private void Yes()
     {
         isGameBoardSet = true;
         hasUserSelected = true;
     }
 
+    /// <summary>
+    /// Event handler for the cancellation button (No).
+    /// </summary>
     private void No()
     {
         isGameBoardSet = false;

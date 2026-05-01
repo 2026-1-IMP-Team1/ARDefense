@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class TurretStats
 {
-    // 새대에 따라 따로 포탑의 스탯을 관리 안해도 됨
-    // type을 어떻게 해야할지 아직 미정이라 일단 이렇게 구현했습니다.
+    // No need to manage turret stats separately by era for now.
+    // The implementation remains as is since the 'type' system is yet to be finalized.
+    
     [Header("Turret HP")]
-    // Phase당 추가 체력과 공격력을 넣어봤습니다. 가중치 조정은 대강 1/4를 추가해놨습니다.
+    // Added additional health and attack power per Phase. 
+    // A weight adjustment of approximately 1/4 (1.25x) has been added per Phase.
     public static float MIDDLE_AGE_TURRET_HP => 10.0f * (GameManager.Instance.Phase * 1.25f);
     public static float MODERN_AGE_TURRET_HP => 50.0f * (GameManager.Instance.Phase * 1.25f);
     public static float FUTURE_AGE_TURRET_HP => 200.0f * (GameManager.Instance.Phase * 1.25f);
 
-    // Phase에 따라 능력치 상향하는 디자인이면 그냥 TURRET_HP 하나로 해도 괜찮지 않을까요? (임시)
-    // 물론 시대별 포탑 스탯들을 각각 지정해줘도 상관 없을듯 합니다.
     public static float TURRET_HP => 50.0f * (GameManager.Instance.Phase * 1.25f);
 
     [Header("Turret Attack Damage")]
@@ -19,20 +19,16 @@ public class TurretStats
     public static float MODERN_AGE_TURRET_ATTACK_DAMAGE => 15.0f * (GameManager.Instance.Phase * 1.25f);
     public static float FUTURE_AGE_TURRET_ATTACK_DAMAGE => 30.0f * (GameManager.Instance.Phase * 1.25f);
 
-    // Phase에 따라 능력치 상향하는 디자인이면 그냥 TURRET_ATTACK_DAMAGE 하나로 해도 괜찮지 않을까요? (임시)
-    // 물론 시대별 포탑 스탯들을 각각 지정해줘도 상관 없을듯 합니다.
     public static float TURRET_ATTACK_DAMAGE => 50.0f * (GameManager.Instance.Phase * 1.25f);
 
     [Header("Turret Attack Speed")]
-    // 포탑의 공격 속도 수치 자체에 대해서는 추가적인 고민이 필요할 거 같습니다.
-    // int로 해서 단순히 수치 자체가 1초에 공격하는 횟수로 할 지, 아니면 다른 게임에서처럼 특정 공식을 통해 공격 속도를 산출할지 등등...
-    // 같이 생각해보면 좋을 거 같아요! 초반부 설계에서만 봤을 때는, 단순하게 하려면 수치 자체를 1초에 공격하는 횟수로 지정해도 괜찮을 거 같습니다...
+    // Further consideration is needed regarding the attack speed values.
+    // Decisions are pending on whether to use an integer representing attacks per second 
+    // or to calculate speed using specific formulas similar to other games.
     public static float MIDDLE_AGE_TURRET_ATTACK_SPEED => 2;
     public static float MODERN_AGE_TURRET_ATTACK_SPEED => 5;
     public static float FUTURE_AGE_TURRET_ATTACK_SPEED => 8;
 
-    // Phase에 따라 능력치 상향하는 디자인이면 그냥 TURRET_ATTACK_SPEED 하나로 해도 괜찮지 않을까요? (임시)
-    // 물론 시대별 포탑 스탯들을 각각 지정해줘도 상관 없을듯 합니다.
     public static float TURRET_ATTACK_SPEED => 2.0f * (GameManager.Instance.Phase * 1.25f);
 
     [Header("Turret Attack Range")]
