@@ -8,11 +8,12 @@ public class GameManager : MonoBehaviour
     // This is the Instance variable. For more details, search for the 'Singleton Pattern'!
     public static GameManager Instance { get; private set; }
 
-    [Header("Game State Change Events")]
+    [Tooltip("Game State Change Events")]
     public event Action IsGameStateBeforeGateOpen; // Event called when the state is before the gate opens (maintenance time)
     public event Action OnGameOver;                // Event called when the game over state is reached
     public event Action OnGameClear;               // Event called when the game clear state is reached
     public event Action OnAgeChanged;              // Event called when the age changes
+    public event Action OnRestartGame;             // Event called just before restarting (used to reset UI etc.)
 
     private const int MAX_WAVE = 9; // The maximum number of waves in the game (Phase 3 boss = final wave)
 
@@ -179,21 +180,30 @@ public class GameManager : MonoBehaviour
     // (Call from UI button events or game over restart logic)
     public void RestartGame()
     {
-        // 1. Initialize game manager variables
+        // 1. Restore timescale first (may be 0 if the player died)
+        Time.timeScale = 1f;
+
+        // 2. Initialize game manager variables
         wave = 0;
         aliveMonsterCount = 0;
         IsWaitingForClear = false;
         CurrentAge = GameAge.MIDDLE_AGE;
         CurrentState = GameFlowState.GAME_START;
 
-        // Add gold reset logic for GoldManager
+        // 3. Reset gold
         if (GoldManager.Instance != null)
         {
             GoldManager.Instance.ResetGold();
         }
 
-        // 2. Reload the currently active scene to delete all maps, turrets, monsters, etc., and return to the initial state
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        // 4. Notify UI and other listeners to reset their state
+        OnRestartGame?.Invoke();
+
+        // 5. Apply the same "No" cleanup logic used when the player declines a found board.
+        //    This resets the AR session without reloading the scene, avoiding the coordinate-system
+        //    disruption that caused the GameBoard to follow the screen on retry.
+        GameBoardGenerator generator = FindObjectOfType<GameBoardGenerator>();
+        generator?.ResetForRestart();
     }
 
     // Handles subscription/unsubscription for the scene loaded event.

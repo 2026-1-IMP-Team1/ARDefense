@@ -38,6 +38,8 @@ public class GameBoardGenerator : MonoBehaviour
     public GameObject GameBoard { get; private set; } = null;
     public ARPlane PlaneOfGameBoard { get; private set; } = null;
 
+    private GameObject chaosGateInstance;
+
     private float MinWidthOfPlane => columns * TILE_SIZE; // Minimum horizontal length required to generate the game board
     private float MinHeightOfPlane => rows * TILE_SIZE;   // Minimum vertical length required to generate the game board
     private bool isGameBoardSet; // Whether the player has confirmed the selection of the game board
@@ -49,8 +51,6 @@ public class GameBoardGenerator : MonoBehaviour
 
     private void OnEnable()
     {
-        arSession.Reset();
-
         planeManager.trackablesChanged.AddListener(OnTrackablesChanged);
         gameBoardSetUI.SetActive(true);
         window.SetActive(false);
@@ -114,6 +114,12 @@ public class GameBoardGenerator : MonoBehaviour
     private void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARPlane> args)
     {
         if (IsGameBoardGenerated || isWaitingUserSelect) return;
+
+        // Retry Bug fix
+        // Only place the GameBoard once AR tracking has fully stabilized.
+        // If a plane is detected while the coordinate system is still unstable immediately after a reset, 
+        //a bug occurs where the GameBoard gets stuck to the camera and follows it.
+        if (ARSession.state != ARSessionState.SessionTracking) return;
 
         foreach (ARPlane plane in args.added)
         {
@@ -293,7 +299,8 @@ public class GameBoardGenerator : MonoBehaviour
     /// </summary>
     private void SetChaosGatePos()
     {
-        GameObject gateObj = Instantiate(chaosGate);
+        chaosGateInstance = Instantiate(chaosGate);
+        GameObject gateObj = chaosGateInstance;
 
         Vector3 gateWorldPos   = GameBoard.transform.TransformPoint(new Vector3( MinWidthOfPlane / 2.0f, 0, 0));
         Vector3 playerWorldPos = GameBoard.transform.TransformPoint(new Vector3(-MinWidthOfPlane / 2.0f, 0, 0));
@@ -329,5 +336,45 @@ public class GameBoardGenerator : MonoBehaviour
     {
         isGameBoardSet = false;
         hasUserSelected = true;
+    }
+
+    /// <summary>
+    /// Called by GameManager.RestartGame(). Applies the same cleanup as the "No" flow:
+    /// destroys all in-game objects and resets AR board search without reloading the scene.
+    /// </summary>
+    public void ResetForRestart()
+    {
+        // Destroy ChaosGate / EnemySpawner
+        if (chaosGateInstance != null)
+        {
+            Destroy(chaosGateInstance);
+            chaosGateInstance = null;
+        }
+
+        // Destroy all remaining monsters
+        foreach (Monster monster in FindObjectsOfType<Monster>())
+            Destroy(monster.gameObject);
+
+        // Destroy GameBoard (also destroys tiles, turrets, player)
+        IsGameBoardGenerated = false;
+
+        if (GameBoard != null)
+        {
+            Destroy(GameBoard);
+            GameBoard = null;
+        }
+        PlaneOfGameBoard = null;
+        isGameBoardSet   = false;
+        hasUserSelected  = false;
+        isWaitingUserSelect = false;
+
+        // Re-enable plane tracking and reset AR session — same as the "No" flow
+        planeManager.enabled = true;
+        arSession.Reset();
+
+        // Restart the board-search UI
+        gameBoardSetUI.SetActive(true);
+        window.SetActive(false);
+        StartDotAnimation();
     }
 }

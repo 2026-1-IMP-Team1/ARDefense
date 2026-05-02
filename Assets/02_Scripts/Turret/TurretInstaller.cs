@@ -243,6 +243,16 @@ public class TurretInstaller : MonoBehaviour
         HideSilhouette();
     }
 
+    // Called by GameUIManager on restart to close panels and clear dangling references.
+    public void ResetState()
+    {
+        CloseBothUI();
+        tile           = null;
+        selectedTurret = null;
+        selectedTile   = null;
+        currentSilhouette = null; // already destroyed with GameBoard
+    }
+
     /// <summary>
     /// Visual Preview: Creates a semi-transparent version of the turret on the target tile.
     /// Uses 'transform.up' to ensure correct vertical placement in AR space.

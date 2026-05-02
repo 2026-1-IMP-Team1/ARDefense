@@ -52,6 +52,7 @@ public class GameUIManager : MonoBehaviour
         GameManager.Instance.OnGameClear += ShowGameClearUI;
         GameManager.Instance.OnAgeChanged += UpdateAgeText;
         GoldManager.Instance.OnGoldInsufficient += ShowInsufficientGoldText;
+        GameManager.Instance.OnRestartGame += ResetUIForRestart;
     }
 
     void OnEnable()
@@ -69,6 +70,7 @@ public class GameUIManager : MonoBehaviour
         GameManager.Instance.OnAgeChanged -= UpdateAgeText;
         readyButton.onClick.RemoveListener(OnReadyButtonClicked);
         GoldManager.Instance.OnGoldInsufficient -= ShowInsufficientGoldText;
+        GameManager.Instance.OnRestartGame -= ResetUIForRestart;
     }
 
     // Method to open the option UI
@@ -118,6 +120,14 @@ public class GameUIManager : MonoBehaviour
         secText.text = string.Format("{0:00}", seconds);
     }
     
+    // Retry button OnClick target.
+    // Delegates to the singleton instead of wiring the button directly to GameManager,
+    // which would become a Missing reference after the scene is reloaded.
+    public void RetryGame()
+    {
+        GameManager.Instance.RestartGame();
+    }
+
     // Method to return to the main menu scene
     public void GoToMainUI()
     {
@@ -139,6 +149,20 @@ public class GameUIManager : MonoBehaviour
         TimeNumManager();
     }
     
+    // Hides all open UI panels and resets the timer when the game restarts
+    private void ResetUIForRestart()
+    {
+        gameOverUI?.SetActive(false);
+        gameClearUI?.SetActive(false);
+        phaseReadyUI?.SetActive(false);
+        PlantUI?.SetActive(false);
+        TurretSelectUI?.SetActive(false);
+        OptionUI?.SetActive(false);
+        elapsedTime = 0f;
+
+        turretInstaller?.ResetState();
+    }
+
     // Method to show the phase ready UI
     private void ShowPhaseReadyUI()
     {
