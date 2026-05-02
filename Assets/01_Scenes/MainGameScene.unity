@@ -8314,7 +8314,7 @@ MonoBehaviour:
   alignBoardToCamera: 1
   planeManager: {fileID: 1629617128}
   arSession: {fileID: 1368582803}
-  chaosGate: {fileID: 3170598573984341495, guid: 41713e35ede29ef47af2eaeb60d82285, type: 3}
+  chaosGate: {fileID: 3170598573984341495, guid: 596eec41bd0bebe46ad0df135d3087a9, type: 3}
   gameBoardSetUI: {fileID: 1702050343}
   window: {fileID: 1477796165}
   yesButton: {fileID: 1237026805}
