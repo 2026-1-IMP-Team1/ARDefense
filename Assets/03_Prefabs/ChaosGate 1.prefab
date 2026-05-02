@@ -14818,7 +14818,7 @@ GameObject:
   - component: {fileID: 2821404612946761850}
   - component: {fileID: 3863792377913361413}
   m_Layer: 0
-  m_Name: ChaosGate
+  m_Name: ChaosGate 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -6,29 +6,29 @@ using UnityEngine.SceneManagement;
 
 public class MainUIManager : MonoBehaviour
 {
-    //MainUI와 OptionUI를 연결하기 위한 변수
+    // Variables to link MainUI and OptionUI
     public GameObject MainUI;
     public GameObject OptionUI;
 
-    // 시작시에 MainUI를 활성화하고 OptionUI를 비활성화하여 초기 상태를 설정
+    // At the start, activate MainUI and deactivate OptionUI to set the initial state
     void Start()
     {
         MainUI.SetActive(true);
         OptionUI.SetActive(false);
     }
-    // 옵션 UI를 열 때 MainUI를 비활성화하고 OptionUI를 활성화하는 메서드
+    // Method to deactivate MainUI and activate OptionUI when opening the option UI
     public void OpenOptionUI()
     {
         MainUI.SetActive(false);
         OptionUI.SetActive(true);
     }
-    // 옵션 UI를 닫을 때 MainUI를 활성화하고 OptionUI를 비활성화하는 메서드
+    // Method to activate MainUI and deactivate OptionUI when closing the option UI
     public void CloseOptionUI()
     {
         MainUI.SetActive(true);
         OptionUI.SetActive(false);
     }
-    // 게임을 종료하는 메서드
+    // Method to exit the game
     public void ExitGame()
     {
         #if UNITY_EDITOR
@@ -37,7 +37,7 @@ public class MainUIManager : MonoBehaviour
         Application.Quit();
         #endif
     }
-    // 볼륨을 조절하는 메서드
+    // Method to control the volume
     public void VolumeControl(float volume)
     {
         Debug.Log("Volume: " + volume);
@@ -46,7 +46,7 @@ public class MainUIManager : MonoBehaviour
 
     public void GoToGameUI()
     {
-        // 게임 UI로 전환하는 로직을 여기에 추가하세요.
+        // Add logic to switch to the game UI here.
         SceneManager.LoadScene("MainGameScene");
     }
 }

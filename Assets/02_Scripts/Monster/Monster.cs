@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class Monster : MonoBehaviour
 {
-    [Header("몬스터가 일반/엘리트/보스 몬스터 중 어떤 몬스터인지? 본인의 타입을 명시하는 변수 / 프로퍼티")]
+    [Header("Variable / Property that specifies the monster's type (Normal/Elite/Boss).")]
 
     protected MonsterType type;
 
@@ -13,11 +13,11 @@ public abstract class Monster : MonoBehaviour
             return type;
         }
 
-        // 일단 Monster의 Type은 외부에서 함부로 변경하기 어렵도록 하는 게 좋을 거 같아 private set으로 해놓았습니다!
+        // For now, I've made the Monster's Type have a private set to make it difficult to change from the outside!
         private set { }
     }
 
-    [Header("Health Point 변수 / 프로퍼티")]
+    [Header("Health Point variable / property")]
 
     protected float hp;
 
@@ -34,9 +34,9 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
-    protected bool isDead;
+    protected bool isDead; // Monster's survival status (true: dead, false: alive)
 
-    [Header("몬스터의 공격 수치에 관련한 변수 / 프로퍼티")]
+    [Header("Variables / Properties related to the monster's attack stats")]
 
     protected float attackDamage;
     protected int attackSpeed;
@@ -67,12 +67,14 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
+    // A virtual function that initializes stats for the monster type. It is overridden and used in child classes.
     public virtual void Init() {}
 
-    protected bool isCountedAsAlive = false;
+    protected bool isCountedAsAlive = false; // Whether it is included in the count of living monsters in GameManager (prevents duplicate counting)
 
     protected virtual void Awake()
     {
+        // When a monster is created, its stats are initialized and it is registered as a living monster in the GameManager.
         Init();
         if (GameManager.Instance != null)
         {
@@ -82,17 +84,9 @@ public abstract class Monster : MonoBehaviour
         Debug.Log($"{name} : hp - {hp}, attackDamage - {attackDamage}, attackSpeed - {attackSpeed}");
     }
 
-    // 실시간 몬스터 체력 관리 
-    /*
-    private void Update()
-    {
-        if (hp <= 0)
-        {
-            Die();
-        }
-    }
-    */
 
+
+    // This is the function for when a monster takes damage.
     public void TakeDamage(float damage)
     {
         if (isDead) return;
@@ -106,9 +100,10 @@ public abstract class Monster : MonoBehaviour
         }
     }
 
+    // Called when the monster dies. It gives a gold reward, reduces the monster count, and then destroys the object.
     protected virtual void Die()
     {
-        // 1. 타입에 따른 골드 양 결정
+        // 1. Determine the amount of gold based on the type
         int rewardGold = 0;
         switch (type)
         {
@@ -123,24 +118,24 @@ public abstract class Monster : MonoBehaviour
                 break;
         }
 
-        // 2. GoldManager의 싱글톤 인스턴스를 통해 골드 추가
+        // 2. Add gold through the singleton instance of GoldManager
         if (GoldManager.Instance != null)
         {
             GoldManager.Instance.AddGold(rewardGold);
         }
 
-        // GameManager의 살아있는 몬스터 수치 반영
+        // Reflect the number of living monsters in GameManager
         if (isCountedAsAlive && GameManager.Instance != null)
         {
             GameManager.Instance.RemoveMonster();
             isCountedAsAlive = false;
         }
 
-        // 3. 몬스터 오브젝트 파괴
+        // 3. Destroy the monster object
         Destroy(gameObject);
     }
 
-    // 오브젝트가 파괴되거나 씬 이동 등으로 삭제될 때 카운트 누수 방지
+    // To prevent count leaks, remove from the living monster count in case the object is destroyed abnormally.
     private void OnDestroy()
     {
         if (isCountedAsAlive && GameManager.Instance != null)

@@ -1,11 +1,11 @@
-// 몬스터들의 HP, 공격력, 공격 속도, 이동 속도 등등 몬스터 스탯 수치가 명시되어 있는 MonsterStats.cs 클래스입니다.
-// 수치 자체를 일일이 외부 스크립트에서 사용할 때마다 하드 코딩하는 것보다, 해당 스크립트에 있는 클래스들의 readonly 상수들을 참조하시면 되겠습니다.
-// 나중에 밸런스 등의 이유로 특정 타입의 몬스터의 스탯을 변경해야 할 때, 여기 있는 상수 값 하나만 바꾸면 되도록 하기 위함입니다!
+// This is the MonsterStats.cs class where monster stats such as HP, attack power, attack speed, movement speed, etc., are specified.
+// Instead of hard-coding the values every time you use them in external scripts, you can refer to the readonly constants in the classes of this script.
+// This is to ensure that when you need to change the stats of a specific type of monster for balance reasons, you only need to change one constant value here!
 
-// 사용하는 법 : 예를 들어 외부 스크립트에서 일반 몬스터의 HP 값을 참조하고 싶을 경우,
-// 스크립트 상단에 using static MonsterStats; 를 작성하시고 NOMRAL_MONSTER_HP를 마음껏 사용하시면 됩니다.
+// How to use: For example, if you want to reference the HP value of a normal monster from an external script,
+// write 'using static MonsterStats;' at the top of the script and feel free to use NORMAL_MONSTER_HP.
 
-// 참고로 수치는 진짜 임의대로 아무거나 넣어놓은 것입니다.
+// Note that the values are just arbitrary placeholders.
 
 using UnityEngine;
 
@@ -13,7 +13,7 @@ public static class MonsterStats
 {
 
     [Header("Monster HP")]
-    // 웨이브당 추가 체력과 공격력을 넣어봤습니다. 가중치 조정은 대강 1/4를 추가해놨습니다.
+    // Added extra health and attack power per wave. The weight adjustment is roughly an additional 1/4.
     public static float NORMAL_MONSTER_HP => 10.0f * (GameManager.Instance.Phase * 1.5f);
     public static float ELITE_MONSTER_HP => 70.0f * (GameManager.Instance.Phase * 1.5f);
     public static float BOSS_MONSTER_HP => 120.0f * (GameManager.Instance.Phase * 1.8f);
@@ -23,16 +23,16 @@ public static class MonsterStats
     public static float ELITE_MONSTER_ATTACK_DAMAGE => 20.0f * (GameManager.Instance.Phase * 1.25f);
     public static float BOSS_MONSTER_ATTACK_DAMAGE => 50.0f * (GameManager.Instance.Phase * 2.0f);
 
-    // 몬스터 웨이브마다 몇마리씩 나오는지 대강 정의
+    // Roughly defines how many monsters appear per wave
     [Header("Monster Number")]
     public static readonly int NORMAL_MONSTER_Number = 20;
     public static readonly int ELITE_MONSTER_Number = 4;
     public static readonly int BOSS_MONSTER_Number = 1;
 
     [Header("Monster Attack Speed")]
-    // 몬스터의 공격 속도 수치 자체에 대해서는 추가적인 고민이 필요할 거 같습니다.
-    // int로 해서 단순히 수치 자체가 1초에 공격하는 횟수로 할 지, 아니면 다른 게임에서처럼 특정 공식을 통해 공격 속도를 산출할지 등등...
-    // 같이 생각해보면 좋을 거 같아요! 초반부 설계에서만 봤을 때는, 단순하게 하려면 수치 자체를 1초에 공격하는 횟수로 지정해도 괜찮을 거 같습니다...
+    // Additional thought seems to be needed regarding the monster's attack speed value itself.
+    // Whether to make it an int and simply have the value be the number of attacks per second, or to calculate attack speed through a specific formula like in other games, etc...
+    // It would be good to think about it together! Looking at the initial design, it seems okay to simply designate the value as the number of attacks per second for simplicity...
     public static readonly int NORMAL_MONSTER_ATTACK_SPEED = 10;
     public static readonly int ELITE_MONSTER_ATTACK_SPEED = 15;
     public static readonly int BOSS_MONSTER_ATTACK_SPEED = 20;

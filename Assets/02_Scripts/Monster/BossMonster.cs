@@ -3,6 +3,7 @@ using static MonsterStats;
 
 public sealed class BossMonster : Monster
 {
+    // Initializes stats according to the BossMonster type.
     public sealed override void Init()
     {
         base.Init();
@@ -13,12 +14,12 @@ public sealed class BossMonster : Monster
         attackDamage = BOSS_MONSTER_ATTACK_DAMAGE;
         attackSpeed = BOSS_MONSTER_ATTACK_SPEED;
 
-        // 생존상태를 결정하는 isDead 변수를 false로 초기화 (kwj)
+        // Initializes the isDead variable, which determines survival status, to false (kwj)
         isDead = false;
     }
 
-    void Update()
+    private void Update()
     {
-        // ...
+        // You can add unique logic for boss monsters (e.g., using special skills) here.
     }
 }

@@ -4,24 +4,30 @@ using static Gold;
 
 public class GoldManager : MonoBehaviour
 {
+    // Singleton Instance: Allows access to GoldManager.Instance from anywhere.
     public static GoldManager Instance { get; private set; }
 
-    [Tooltip("Event")]
+    [Tooltip("Event-related settings")]
+    // Event triggered when the current gold amount changes
     public event Action OnGoldChanged;
+    // Event triggered when there is insufficient gold for a transaction
     public event Action OnGoldInsufficient;
     
 
-    // 골드를 기본값으로 다시 세팅해주는 메서드
+    /// <summary>
+    /// Resets the gold amount to the default starting value.
+    /// </summary>
     public void ResetGold()
     {
         Gold = GAME_START_GOLD;
-        OnGoldChanged?.Invoke(); // UI 업데이트 이벤트 발생
+        OnGoldChanged?.Invoke(); // Trigger event to update UI, etc.
     }
 
-    [Header("골드 변수 / 프로퍼티")]
+    [Header("Gold Data Management")]
 
     private int currentGold;
 
+    // Gold Property: Automatically triggers an event whenever the value is modified.
     public int Gold
     {
         get
@@ -32,12 +38,13 @@ public class GoldManager : MonoBehaviour
         set
         {
             currentGold = value;
-            OnGoldChanged?.Invoke();
+            OnGoldChanged?.Invoke(); // Execute UI refresh event whenever value is updated
         }
     }
 
     void Awake()
     {
+        // Singleton Pattern Implementation: Ensures only one instance exists by destroying duplicates.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -45,35 +52,50 @@ public class GoldManager : MonoBehaviour
         }
 
         Instance = this;
+        // Keep the object alive when switching between scenes
         DontDestroyOnLoad(gameObject);
 
+        // Set initial starting gold
         currentGold = GAME_START_GOLD;
     }
 
+    /// <summary>
+    /// Adds a specified amount of gold.
+    /// </summary>
+    /// <param name="goldToAdd">Amount of gold to add</param>
     public void AddGold(int goldToAdd)
     {
-        // 골드 추가 로직 구현
+        // Logic for adding gold
         Gold += goldToAdd;
-        // 골드 수급 확인 및 현재 골드량 UI와 중복 체크용용
-        Debug.Log($"{goldToAdd} 골드 획득, 현재 골드: {Gold}");
+        
+        // Debug log to track income and current balance
+        Debug.Log($"{goldToAdd} Gold acquired. Current Gold: {Gold}");
     }
 
+    /// <summary>
+    /// Spends a specified amount of gold. Returns whether the transaction was successful.
+    /// </summary>
+    /// <param name="goldToSpend">Amount of gold to spend</param>
+    /// <returns>True if successful, false if insufficient funds</returns>
     public bool SpendGold(int goldToSpend)
     {
+        // Check for invalid input values
         if (goldToSpend == -1)
         {
-            Debug.Log("잘못된 골드 소비 경로로 접근하였습니다.");
+            Debug.Log("Accessed via an invalid gold consumption path.");
             return false;
         }
 
-        // 골드 소비 로직 구현
+        // Check for insufficient balance
         if (currentGold < goldToSpend)
         {
-            Debug.Log($"골드가 부족합니다: 현재 골드 - {Gold} / 사용하려는 골드 - {goldToSpend}");
+            Debug.Log($"Insufficient gold: Current - {Gold} / Attempting to spend - {goldToSpend}");
+            // Trigger insufficient gold event (e.g., to display an "Insufficient Funds" popup)
             OnGoldInsufficient?.Invoke();
             return false;
         }
 
+        // Logic for deducting gold
         Gold -= goldToSpend;
         return true;
     }

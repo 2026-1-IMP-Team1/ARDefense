@@ -3,6 +3,7 @@ using static MonsterStats;
 
 public sealed class EliteMonster : Monster
 {
+    // Initializes stats according to the EliteMonster type.
     public sealed override void Init()
     {
         base.Init();
@@ -14,8 +15,8 @@ public sealed class EliteMonster : Monster
         attackSpeed = ELITE_MONSTER_ATTACK_SPEED;
     }
 
-    void Update()
+    private void Update()
     {
-        // ...
+        // You can add unique logic for elite monsters here.
     }
 }

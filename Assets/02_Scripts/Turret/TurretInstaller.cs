@@ -9,69 +9,94 @@ using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 using static Tile;
 using static TurretCost;
 
+/// <summary>
+/// TurretInstaller Class:
+/// This class handles user touch input in an AR environment to interact with the game board.
+/// It manages the logic for displaying placement silhouettes, installing turrets, 
+/// and accessing turret/tile information through Raycasting.
+/// </summary>
 public class TurretInstaller : MonoBehaviour
 {
-    [Header("Game Board Generator")]
-    [SerializeField] private GameBoardGenerator gameBoardGenerator;
+    // -------------------------------------------------------------------------
+    // [Serialized Fields - References & Settings]
+    // -------------------------------------------------------------------------
+    
+    [Header("Dependencies")]
+    [SerializeField] private GameBoardGenerator gameBoardGenerator; // Reference to the generator that creates the AR grid
 
-    [Tooltip("AR Camera")]
+    [Tooltip("Main camera used for converting screen touch to world Ray")]
     [SerializeField] private Camera cam;
 
-    [Header("Turret Prefab")]
+    [Header("Turret Prefabs (By Era)")]
     [SerializeField] private GameObject middleAgeTurretPrefab;
     [SerializeField] private GameObject modernAgeTurretPrefab;
     [SerializeField] private GameObject futureAgeTurretPrefab;
 
-    [Header("포탑 스케일 배율 (1이면 tileSize와 동일한 크기로 설정)")]
+    [Header("Scale Settings")]
+    [Tooltip("Adjusts the turret's size relative to the Tile size (0.9 means 90% of tile width)")]
     [SerializeField, Range(0.1f, 2f)] private float middleAgeTurretScaleValue = 0.9f;
     [SerializeField, Range(0.1f, 2f)] private float modernAgeTurretScaleValue  = 0.9f;
     [SerializeField, Range(0.1f, 2f)] private float futureAgeTurretScaleValue  = 0.9f;
 
-    [Header("터렛 실루엣 Prefab")]
+    [Header("Visual Feedback (Silhouette)")]
     [SerializeField] private GameObject middleAgeSilhouettePrefab;
     [SerializeField] private GameObject modernAgeSilhouettePrefab;
     [SerializeField] private GameObject futureAgeSilhouettePrefab;
 
-    private GameObject currentSilhouette;
+    private GameObject currentSilhouette; // Instance of the semi-transparent preview object
 
-    [Header("타일 Layer Mask (특정 레이어만 터치 감지할 때 설정)")]
-    [SerializeField] private LayerMask tileLayerMask = ~0;
+    [Header("Input Settings")]
+    [SerializeField] private LayerMask tileLayerMask = ~0; // Layer mask to filter specific objects if needed
 
-    public event Action OnTurretAlreadyInstalled;
+    // -------------------------------------------------------------------------
+    // [Events & UI References]
+    // -------------------------------------------------------------------------
+    
+    public event Action OnTurretAlreadyInstalled; // Notifies other systems when a user tries to build on an occupied tile
 
-    //포탑 설치 UI 저장 변수[lyh]
-    public GameObject PlantUI;
+    [Header("UI Panels")]
+    public GameObject PlantUI;          // UI for "Install Turret" action
+    [SerializeField] private GameObject turretSelectUI; // UI for "Upgrade/Destroy" existing turret
 
-    [Header("포탑 선택 UI")]
-    [SerializeField] private GameObject turretSelectUI;
+    [Header("Turret Info Display")]
     [SerializeField] private UnityEngine.UI.Slider hpSlider;
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI damageText;
     [SerializeField] private TextMeshProUGUI upgradeCountText;
 
-    // 터치한 타일 정보 저장 변수[lyh]
-    Tile tile;
+    // -------------------------------------------------------------------------
+    // [State Variables]
+    // -------------------------------------------------------------------------
+    
+    private Tile tile;               // Currently hit tile via raycast
+    private Turret selectedTurret;   // Currently selected turret for info/upgrade
+    private Tile selectedTile;       // The tile occupied by the selected turret
 
-    private Turret selectedTurret;
-    private Tile selectedTile;
     private void Awake()
     {
+        // Fallback to Camera.main if a specific camera isn't assigned in the Inspector
         if (cam == null) cam = Camera.main;
     }
 
     private void Update()
     {
-        // GameBoard가 생성되기 전에는 터치 입력을 받지 않습니다.
+        // Safety: Do not process input if the AR board hasn't been placed yet
         if (!gameBoardGenerator.IsGameBoardGenerated) return;
 
+        // Step 1: Detect the beginning of a touch/click
         if (!TryGetTouchBeganPosition(out Vector2 screenPos)) return;
 
-        // PlantUI 버튼 등 UI 위의 터치는 무시
+        // Step 2: Prevent world interaction if the user is clicking a UI button
         if (IsPointerOverUI(screenPos)) return;
 
+        // Step 3: Handle the interaction logic (Raycasting)
         HandleTileTouch(screenPos);
     }
 
+    /// <summary>
+    /// Uses GraphicRaycaster to check if the touch position overlaps with any Canvas UI elements.
+    /// This prevents "click-through" where a player accidentally builds a turret while clicking a button.
+    /// </summary>
     private bool IsPointerOverUI(Vector2 screenPos)
     {
         var eventData = new PointerEventData(EventSystem.current) { position = screenPos };
@@ -82,6 +107,7 @@ public class TurretInstaller : MonoBehaviour
 
     private void OnEnable()
     {
+        // Initialize EnhancedTouch for improved input handling in Unity
         EnhancedTouchSupport.Enable();
     }
 
@@ -90,6 +116,9 @@ public class TurretInstaller : MonoBehaviour
         EnhancedTouchSupport.Disable();
     }
 
+    /// <summary>
+    /// Unifies mobile touch (EnhancedTouch) and Editor mouse clicks for easier debugging.
+    /// </summary>
     private bool TryGetTouchBeganPosition(out Vector2 screenPos)
     {
         var touches = Touch.activeTouches;
@@ -105,6 +134,7 @@ public class TurretInstaller : MonoBehaviour
         }
 
 #if UNITY_EDITOR
+        // Support for PC Editor testing
         if (Input.GetMouseButtonDown(0))
         {
             screenPos = Input.mousePosition;
@@ -115,18 +145,23 @@ public class TurretInstaller : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Primary interaction logic:
+    /// 1. Shoots a Ray from the camera into the 3D world.
+    /// 2. Identifies if the user hit a Turret (Select mode) or a Tile (Build mode).
+    /// 3. Toggles the appropriate UI and preview silhouette.
+    /// </summary>
     private void HandleTileTouch(Vector2 screenPos)
     {
         Ray ray = cam.ScreenPointToRay(screenPos);
 
-        // 레이어 마스크 없이 캐스트 → Turret·Tile 모두 감지
         if (!Physics.Raycast(ray, out RaycastHit hit, 100f))
         {
-            CloseBothUI();
+            CloseBothUI(); // Close all windows if user clicks empty space
             return;
         }
 
-        // ① hit한 오브젝트(또는 부모)에 Turret이 있으면 → 포탑 선택 UI
+        // Logic Branch A: User touched a Turret object
         Turret hitTurret = hit.collider.GetComponentInParent<Turret>();
         if (hitTurret != null)
         {
@@ -139,7 +174,7 @@ public class TurretInstaller : MonoBehaviour
             return;
         }
 
-        // ② Tile이면 → 설치 UI (빈 타일) 또는 fallback 포탑 선택
+        // Logic Branch B: User touched a Tile object
         tile = hit.collider.GetComponent<Tile>();
         if (tile == null)
         {
@@ -147,6 +182,7 @@ public class TurretInstaller : MonoBehaviour
             return;
         }
 
+        // Branch B-1: Tile already has a turret (Alternative selection method)
         if (tile.IsTurretInstalled)
         {
             selectedTile   = tile;
@@ -160,12 +196,16 @@ public class TurretInstaller : MonoBehaviour
             return;
         }
 
+        // Branch B-2: Tile is empty (Open placement UI and show preview)
         turretSelectUI.SetActive(false);
         PlantUI.SetActive(true);
         ShowSilhouette(tile);
     }
 
-    // Tile의 InstalledTurret을 순회해서 해당 포탑이 설치된 타일을 찾는다
+    /// <summary>
+    /// Searches through the GameBoard hierarchy to link a Turret back to its parent Tile.
+    /// Necessary for clean destruction and tile state management.
+    /// </summary>
     private Tile FindTileForTurret(Turret turret)
     {
         if (gameBoardGenerator.GameBoard == null) return null;
@@ -178,6 +218,10 @@ public class TurretInstaller : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Updates the UI elements with current stats from the selected turret.
+    /// Uses string interpolation and formatting (F0) for clean display.
+    /// </summary>
     private void RefreshTurretInfoUI(Turret turret)
     {
         if (hpText           != null) hpText.text           = $"{turret.HP:F0} / {turret.MaxHP:F0}";
@@ -199,6 +243,20 @@ public class TurretInstaller : MonoBehaviour
         HideSilhouette();
     }
 
+    // Called by GameUIManager on restart to close panels and clear dangling references.
+    public void ResetState()
+    {
+        CloseBothUI();
+        tile           = null;
+        selectedTurret = null;
+        selectedTile   = null;
+        currentSilhouette = null; // already destroyed with GameBoard
+    }
+
+    /// <summary>
+    /// Visual Preview: Creates a semi-transparent version of the turret on the target tile.
+    /// Uses 'transform.up' to ensure correct vertical placement in AR space.
+    /// </summary>
     private void ShowSilhouette(Tile targetTile)
     {
         HideSilhouette();
@@ -209,11 +267,15 @@ public class TurretInstaller : MonoBehaviour
         float turretSize      = TILE_SIZE * GetTurretScaleForCurrentAge();
         float tileHalfHeight  = targetTile.transform.lossyScale.y * 0.5f;
         float turretHalfHeight = turretSize * 0.5f;
-        Vector3   spawnPos  = targetTile.transform.position + targetTile.transform.up * (tileHalfHeight + turretHalfHeight);
+        
+        // Spawn Position Calculation: Tile center + Upwards offset based on heights
+        Vector3 spawnPos = targetTile.transform.position + targetTile.transform.up * (tileHalfHeight + turretHalfHeight);
         Quaternion boardRot = gameBoardGenerator.GameBoard.transform.rotation;
 
         currentSilhouette = Instantiate(prefab, spawnPos, boardRot);
         currentSilhouette.transform.localScale = Vector3.one * turretSize;
+        
+        // Parent to GameBoard for consistent coordinate space
         currentSilhouette.transform.SetParent(gameBoardGenerator.GameBoard.transform, worldPositionStays: true);
     }
 
@@ -224,6 +286,7 @@ public class TurretInstaller : MonoBehaviour
         currentSilhouette = null;
     }
 
+    // [Helper Functions] Era-based logic for Prefabs, Scale, and Cost
     private GameObject GetSilhouettePrefabForCurrentAge()
     {
         return GameManager.Instance.CurrentAge switch
@@ -261,23 +324,18 @@ public class TurretInstaller : MonoBehaviour
     {
         switch (GameManager.Instance.CurrentAge)
         {
-            case GameAge.MIDDLE_AGE :
-                return MIDDLE_AGE_TURRET_COST;
-            
-            case GameAge.MODERN_AGE :
-                return MODERN_AGE_TURRET_COST;
-            
-            case GameAge.FUTURE_AGE :
-                return FUTURE_AGE_TURRET_COST;
-
-            default :
-                return -1;
+            case GameAge.MIDDLE_AGE : return MIDDLE_AGE_TURRET_COST;
+            case GameAge.MODERN_AGE : return MODERN_AGE_TURRET_COST;
+            case GameAge.FUTURE_AGE : return FUTURE_AGE_TURRET_COST;
+            default : return -1;
         }
     }
 
     public void UpgradeTurret()
     {
         if (selectedTurret == null) return;
+        
+        // Gold Management Integration: Verify funds before upgrading
         if (!GoldManager.Instance.SpendGold(TURRET_UPGRADE_COST)) return;
 
         selectedTurret.Upgrade();
@@ -288,6 +346,7 @@ public class TurretInstaller : MonoBehaviour
     {
         if (selectedTurret == null) return;
 
+        // Clean up the Tile state so a new turret can be built here later
         if (selectedTile != null)
         {
             selectedTile.IsTurretInstalled = false;
@@ -300,49 +359,47 @@ public class TurretInstaller : MonoBehaviour
         turretSelectUI.SetActive(false);
     }
 
+    /// <summary>
+    /// Finalizes the installation of a turret. 
+    /// Includes coordinate alignment for AR and handles parenting logic 
+    /// to avoid non-uniform scale distortion inherited from tiles.
+    /// </summary>
     public void InstallTurret()
     {
         if (tile == null) return;
 
+        // Occupancy Check
         if (tile.IsTurretInstalled)
         {
             OnTurretAlreadyInstalled?.Invoke();
             return;
         }
 
-        // ── 골드 차감 ───────────────────────────────────────[lyh]
+        // Fund Check
         if (!GoldManager.Instance.SpendGold(MeasureTurretCost())) return;
 
-        // ── 포탑 월드 크기 계산 ──────────────────────────────
         float turretSize = TILE_SIZE * GetTurretScaleForCurrentAge();
+        float tileHalfHeight   = tile.transform.lossyScale.y * 0.5f;
+        float turretHalfHeight = turretSize * 0.5f;
 
-        // ── 위치 계산 ────────────────────────────────────────
-        // lossyScale: 부모 포함 실제 월드 스케일
-        // tile.transform.up: AR 환경에서 보드가 기울어져도 올바른 방향 유지
-        float tileHalfHeight  = tile.transform.lossyScale.y * 0.5f;
-        float turretHalfHeight = turretSize * 0.5f; // 피벗이 오브젝트 중심에 있다고 가정
+        // Position: Place the turret exactly on top of the tile surface
+        Vector3 spawnPos = tile.transform.position + tile.transform.up * (tileHalfHeight + turretHalfHeight);
 
-        Vector3 spawnPos = tile.transform.position
-                        + tile.transform.up * (tileHalfHeight + turretHalfHeight);
-
-        // ── 회전 계산 ────────────────────────────────────────
+        // Rotation: Align with the GameBoard's rotation
         Quaternion boardRotation = gameBoardGenerator.GameBoard != null
             ? gameBoardGenerator.GameBoard.transform.rotation
             : Quaternion.identity;
 
-        // ── 포탑 생성 ────────────────────────────────────────
         GameObject turretPrefab = GetTurretPrefabForCurrentAge();
-        if (turretPrefab == null)
-        {
-            Debug.LogWarning($"[TurretInstaller] {GameManager.Instance.CurrentAge} 프리팹이 설정되지 않았습니다.");
-            return;
-        }
+        if (turretPrefab == null) return;
+
         GameObject turret = Instantiate(turretPrefab, spawnPos, boardRotation);
         turret.transform.localScale = Vector3.one * turretSize;
 
-        // ── 비균등 스케일 상속 방지: Tile이 아닌 GameBoard의 자식으로 설정 ──
-        // Tile의 scale이 (0.1, 0.01, 0.1)처럼 비균등하면
-        // SetParent 시 Unity가 world scale 유지를 위해 local scale을 역산해 Y가 뻥튀기됨
+        // IMPORTANT: Parenting Logic
+        // We parent to 'GameBoard' rather than 'Tile' because tiles often have non-uniform scales 
+        // (e.g., flattened Y for the grid). If we parented to Tile, the Turret would inherit 
+        // that distortion and appear flattened or stretched.
         Transform parentTransform = gameBoardGenerator.GameBoard != null
             ? gameBoardGenerator.GameBoard.transform
             : tile.transform.parent;
@@ -350,14 +407,11 @@ public class TurretInstaller : MonoBehaviour
         turret.transform.SetParent(parentTransform, worldPositionStays: true);
         turret.name = $"Turret_{tile.x}_{tile.y}";
 
-        // ── 타일 상태 업데이트 ───────────────────────────────
+        // Update Tile state
         tile.IsTurretInstalled = true;
         tile.InstalledTurret = turret;
 
         HideSilhouette();
         PlantUI.SetActive(false);
-
-        Debug.Log($"[TurretInstaller] 포탑 설치됨: Tile ({tile.x}, {tile.y}), " +
-                $"Position {spawnPos}, Scale {turretSize:F3}m");
     }
 }

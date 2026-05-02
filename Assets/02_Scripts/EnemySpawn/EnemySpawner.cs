@@ -3,34 +3,40 @@ using System.Collections;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab;    
-    public GameObject gatePrefab;    
+    [Header("스폰할 몬스터 프리팹")]
+    [SerializeField] private GameObject normalMonsterPrefab; // Normal monster prefab
+    [SerializeField] private GameObject eliteMonsterPrefab;  // Elite monster prefab
+    [SerializeField] private GameObject bossMonsterPrefab;   // Boss monster prefab
 
-    public GameBoardGenerator boardGenerator;
-    public float waitTimeAfterBoard = 3.0f; 
+    [Header("스폰 설정")]
+    public float waitTimeAfterBoard = 3.0f; // Wait time after board generation until spawn starts
+    public int amountPerTime;               // Number of monsters to spawn in the current wave
 
-    private bool hasStartedWave = false;
-    private GameObject spawnedGate;
-    public int amountPerTime;
-    
+    private GameBoardGenerator boardGenerator; // Game board generator reference
+    private bool hasStartedWave = false;       // Whether the monster spawn for the current wave has started
 
-
-    void Update()
+    // Initializes by receiving a reference to GameBoardGenerator from an external source (SceneController).
+    public void Initialize(GameBoardGenerator generator)
     {
-        // 보스 스폰 후 남은 몬스터들이 전멸할 때까지 스폰 로직 대기
+        boardGenerator = generator;
+    }
+
+    private void Update()
+    {
+        // Checks the game state every frame to decide whether to start the monster spawn coroutine.
+        var state = GameManager.Instance.CurrentState;
+        if (state == GameFlowState.GAME_OVER || state == GameFlowState.GAME_CLEAR) return;
         if (GameManager.Instance.IsWaitingForClear) return;
 
-        // 현재 게임 단계에 맞춰서 한번에 나오는 몬스터 수를 결정하는 로직입니다.
-        // StartWave함수에서 사용
-        if(GameManager.Instance.CurrentState == GameFlowState.NORMAL_MONSTER_SPAWN)
+        if (GameManager.Instance.CurrentState == GameFlowState.NORMAL_MONSTER_SPAWN)
         {
             amountPerTime = MonsterStats.NORMAL_MONSTER_Number;
         }
-        else if(GameManager.Instance.CurrentState == GameFlowState.ELITE_MONSTER_SPAWN)
+        else if (GameManager.Instance.CurrentState == GameFlowState.ELITE_MONSTER_SPAWN)
         {
             amountPerTime = MonsterStats.ELITE_MONSTER_Number;
         }
-        else if(GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)
+        else if (GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)
         {
             amountPerTime = MonsterStats.BOSS_MONSTER_Number;
         }
@@ -41,8 +47,12 @@ public class EnemySpawner : MonoBehaviour
             {
                 if (GameManager.Instance.CurrentState == GameFlowState.BEFORE_GATE_OPEN)
                 {
-                    // Debug.Log("BEFORE_GATE_OPEN");
                     hasStartedWave = false;
+                    return;
+                }
+
+                if (GameManager.Instance.CurrentState == GameFlowState.GAME_START)
+                {
                     return;
                 }
 
@@ -52,52 +62,58 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    IEnumerator SimpleSpawnSequence()
+    // A coroutine that spawns a set number of monsters appropriate for the current game state.
+    private IEnumerator SimpleSpawnSequence()
     {
-        Vector3 boardCenterPos = boardGenerator.GameBoard.transform.position;
-        
-        GameObject player = GameObject.FindWithTag("Player");
-        Vector3 spawnPos = boardCenterPos; 
-        Quaternion spawnRot = Quaternion.identity;
-
-        if (player != null)
+        // Selects the monster prefab to spawn based on the current game state.
+        GameObject monsterPrefab = GameManager.Instance.CurrentState switch
         {
-            Vector3 dirFromPlayer = (boardCenterPos - player.transform.position).normalized;
-            dirFromPlayer.y = 0; 
+            GameFlowState.NORMAL_MONSTER_SPAWN => normalMonsterPrefab,
+            GameFlowState.ELITE_MONSTER_SPAWN  => eliteMonsterPrefab,
+            GameFlowState.BOSS_MONSTER_SPAWN   => bossMonsterPrefab,
+            _                                  => null
+        };
 
-            // 임시로 plane 중앙에서 플레이어 반대 방향으로 0.5m 지점에 게이트 생성했습니다
-            spawnPos = boardCenterPos + (dirFromPlayer * 0.5f);
-            spawnRot = Quaternion.LookRotation(-dirFromPlayer); 
+        if (monsterPrefab == null)
+        {
+            Debug.LogWarning("[EnemySpawnerClone] 현재 상태에 맞는 몬스터 프리팹이 없습니다.");
+            yield break;
         }
 
-        spawnedGate = Instantiate(gatePrefab, spawnPos, spawnRot);
-        
-        GateController gateCtrl = spawnedGate.GetComponent<GateController>();
-        if (gateCtrl != null) gateCtrl.OpenGate();
-
-        yield return new WaitForSeconds(waitTimeAfterBoard);
-
-        // amountPerTime에 따라 몬스터를 소환하게 만들었습니다(원래는 5로 되있어서 수정)(kwj)
+        // Spawns monsters up to the specified number (amountPerTime).
         for (int i = 0; i < amountPerTime; i++)
         {
-            // 게이트 문 앞으로 0.1m 지점에서 생성
-            Vector3 monsterPos = spawnedGate.transform.position + (spawnedGate.transform.forward * 0.1f) + new Vector3(0, 0.1f, 0);
+            Vector3 monsterPos = transform.position + (transform.forward * 0.1f) + new Vector3(0, 0.1f, 0);
             
-            // enemyPrefab을 사용하여 소환
-            Instantiate(enemyPrefab, monsterPos, spawnedGate.transform.rotation);
+            if (GameManager.Instance.CurrentState == GameFlowState.NORMAL_MONSTER_SPAWN)
+            {
+                for (int j = 0; j <= GameManager.Instance.Phase; j++)
+                {
+                    Instantiate(monsterPrefab, monsterPos, transform.rotation);
+                    Debug.Log(GameManager.Instance.Phase);
+                    yield return new WaitForSeconds(0.2f);
+                }
+            }
+            else
+            {
+                Instantiate(monsterPrefab, monsterPos, transform.rotation);
+            }
             
-            yield return new WaitForSeconds(0.2f);
+            
+            yield return new WaitForSeconds(1.0f);
         }
 
+        // After spawning is finished, it either proceeds to the next wave or switches to a waiting-for-clear state, depending on the game state.
         if (GameManager.Instance.CurrentState == GameFlowState.BOSS_MONSTER_SPAWN)
         {
-            // 보스 스폰 직후 wave 증가 및 클리어 대기 상태 돌입
             GameManager.Instance.IsWaitingForClear = true;
+            // Immediately check in case the boss is already defeated during the 2-second wait
+            GameManager.Instance.TryAdvanceAfterBoss();
         }
         else
         {
             GameManager.Instance.Wave++;
         }
-        hasStartedWave = false; // 다음 웨이브 진행을 위해 초기화
+        hasStartedWave = false;
     }
 }

@@ -3,6 +3,7 @@ using static MonsterStats;
 
 public sealed class NormalMonster : Monster
 {
+    // Initializes stats according to the NormalMonster type.
     public sealed override void Init()
     {
         base.Init();
@@ -16,8 +17,8 @@ public sealed class NormalMonster : Monster
         isDead = false;
     }
 
-    void Update()
+    private void Update()
     {
-        // ...
+        // You can add unique logic for normal monsters here.
     }
 }
